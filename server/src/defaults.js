@@ -1,0 +1,400 @@
+/**
+ * Default settings and page content.
+ * Any text may contain the token {school}, which the website replaces with the
+ * registered school name, so renaming the school updates every page at once.
+ */
+
+/** Bundled default photos (client/public/images). Replace them from the admin panel at any time. */
+const img = (name) => `/images/${name}.jpg`;
+const person = (name) => `/images/people/${name}.jpg`;
+
+export const DEFAULT_SETTINGS = {
+  schoolName: 'Greenfield School',
+  shortName: 'GFS',
+  motto: 'Learn · Grow · Achieve',
+  established: '1998',
+  logo: '/images/crest.svg',
+  favicon: '',
+  theme: {
+    primary: '#16a34a',
+    accent: '#f59e0b',
+    dark: '#0b2e1a',
+    headingFont: 'Poppins',
+    bodyFont: 'Inter',
+    radius: 'lg',
+    animations: true,
+  },
+  contact: {
+    phone: '+254 700 000 000',
+    phone2: '',
+    email: 'info@greenfield.co.ke',
+    address: 'P.O. Box 1998 – 00100, Nairobi',
+    location: 'Greenfield Road, Nairobi, Kenya',
+    hours: 'Mon – Fri: 7:30 AM – 5:00 PM',
+    mapEmbed: '',
+  },
+  social: {
+    facebook: '',
+    twitter: '',
+    instagram: '',
+    youtube: '',
+    linkedin: '',
+    tiktok: '',
+    whatsapp: '',
+  },
+  chat: {
+    enabled: true,
+    number: '',
+    name: '{school}',
+    status: 'Typically replies within a few minutes',
+    greeting: 'Hi there 👋 How can we help you today?',
+    delay: 15,
+    placeholder: 'Type your message…',
+  },
+  topbar: {
+    enabled: true,
+    announcement: 'Admissions for the new academic year are now open. Visit the school office for details.',
+    link: '',
+  },
+  footer: {
+    about:
+      '{school} is committed to nurturing disciplined, confident and well-rounded learners ready to serve their communities and the world.',
+    copyright: '',
+  },
+  seo: {
+    description: 'Official website of {school}.',
+    keywords: 'Greenfield School, secondary school, Kenya, education',
+  },
+};
+
+export const DEFAULT_CONTENT = {
+  home: {
+    hero: {
+      autoplay: true,
+      interval: 7,
+      transition: 'mix',
+      slides: [
+        {
+          image: img('school-community'),
+          eyebrow: 'Welcome to {school}',
+          title: 'Learn. Grow. Achieve.',
+          subtitle: 'A caring Kenyan secondary school where every learner is known, challenged and celebrated.',
+          ctaText: 'Discover Our School',
+          ctaLink: '/about',
+          cta2Text: 'Admissions',
+          cta2Link: '/about#contact',
+        },
+        {
+          image: img('classroom'),
+          eyebrow: 'Academic Excellence',
+          title: 'Where Curious Minds Thrive',
+          subtitle: 'Dedicated teachers, small classes and personal mentoring that turn effort into results.',
+          ctaText: 'Our Departments',
+          ctaLink: '/departments',
+          cta2Text: 'Meet Our Staff',
+          cta2Link: '/staff',
+        },
+        {
+          image: img('school-bus-trip'),
+          eyebrow: 'Beyond the Classroom',
+          title: 'Leadership, Talent & Character',
+          subtitle: 'Sports, clubs, academic tours and student leadership that shape confident, responsible citizens.',
+          ctaText: 'Our Student Leaders',
+          ctaLink: '/prefects',
+          cta2Text: 'View Gallery',
+          cta2Link: '/gallery',
+        },
+      ],
+    },
+    stats: {
+      enabled: true,
+      items: [
+        { icon: 'people-fill', value: 1200, suffix: '+', label: 'Learners' },
+        { icon: 'person-badge', value: 65, suffix: '+', label: 'Qualified Teachers' },
+        { icon: 'puzzle', value: 20, suffix: '+', label: 'Clubs & Societies' },
+        { icon: 'award', value: 25, suffix: '+', label: 'Years of Excellence' },
+      ],
+    },
+    features: {
+      enabled: true,
+      eyebrow: 'Why {school}',
+      title: 'A School That Brings Out the Best in Every Learner',
+      subtitle: 'For over two decades, families have trusted us to nurture disciplined, confident and caring young people.',
+      image: img('students-uniform'),
+      image2: img('school-building-wide'),
+      buttonText: 'Read Our Story',
+      buttonLink: '/about',
+      items: [
+        { icon: 'graph-up-arrow', title: 'Strong Results', text: 'Steady KCSE improvement through continuous assessment and subject clinics.' },
+        { icon: 'person-hearts', title: 'Personal Mentorship', text: 'Every learner has a teacher-mentor who follows their progress and wellbeing.' },
+        { icon: 'trophy', title: 'Talent & Sports', text: 'Games, music, drama, clubs and academic tours beyond the classroom.' },
+        { icon: 'shield-check', title: 'Safe & Disciplined', text: 'A calm, secure compound guided by clear values and caring staff.' },
+      ],
+    },
+    welcome: {
+      enabled: true,
+      eyebrow: 'Principal’s Welcome',
+      title: 'Welcome to {school}',
+      body:
+        'It is my pleasure to welcome you to {school}. Here, learners are challenged, supported and celebrated as they grow into responsible young adults.\n\nThrough strong academics, sports, clubs and leadership opportunities, we nurture young people who are disciplined, curious and ready to make a positive difference in Kenya and beyond.',
+      image: person('principal-large'),
+      name: 'Dr. Margaret Achieng',
+      role: 'Principal, {school}',
+      buttonText: 'Read Our Story',
+      buttonLink: '/about',
+    },
+    journey: {
+      enabled: true,
+      eyebrow: 'The Learner Journey',
+      title: 'Four Years That Shape a Lifetime',
+      subtitle: 'From the first day of Form 1 to graduation, every stage is planned around the learner.',
+      buttonText: 'Admission Enquiries',
+      buttonLink: '/about#contact',
+      items: [
+        { year: 'Admission', icon: 'door-open', title: 'A Warm Welcome', text: 'New learners join through a guided orientation week, meet their mentors and settle into school life.' },
+        { year: 'Form 1–2', icon: 'book', title: 'Strong Foundations', text: 'A broad curriculum builds solid skills in languages, mathematics, sciences and humanities.' },
+        { year: 'Form 3', icon: 'compass', title: 'Discover Your Strengths', text: 'Learners deepen their chosen subjects, join clubs and take on leadership responsibilities.' },
+        { year: 'Form 4', icon: 'pencil-square', title: 'Ready for KCSE', text: 'Focused revision, mock examinations and one-on-one academic clinics prepare every candidate.' },
+        { year: 'Alumni', icon: 'mortarboard', title: 'Beyond {school}', text: 'Graduates move on to university, college and careers, carrying our values with them.' },
+      ],
+    },
+    prefects: { enabled: true, eyebrow: 'Student Leadership', title: 'Meet Our Student Leaders', subtitle: 'Learners entrusted with leading by example.' },
+    gallery: { enabled: true, eyebrow: 'Gallery', title: 'Life at {school}', subtitle: 'Moments from our classrooms, compound and trips.' },
+    testimonials: {
+      enabled: true,
+      eyebrow: 'Testimonials',
+      title: 'What Our Community Says',
+      items: [
+        { name: 'A Proud Parent', role: 'Parent', quote: 'The teachers genuinely care. My child has grown in confidence and discipline since joining {school}.', photo: '' },
+        { name: 'Alumnus', role: 'Class of 2019', quote: '{school} gave me the foundation and values that carried me through university and into my career.', photo: '' },
+        { name: 'Current Student', role: 'Form 3 Student', quote: 'There is always something to be part of — clubs, sports and teachers who push you to do your best.', photo: '' },
+      ],
+    },
+    news: { enabled: true, eyebrow: 'Stay Updated', title: 'News & Events', subtitle: 'The latest happenings around the school.' },
+    events: { enabled: true, eyebrow: 'Calendar', title: 'Upcoming Events', subtitle: 'Mark your calendar for these upcoming activities.' },
+    cta: {
+      enabled: true,
+      title: 'Join the {school} Family',
+      text: 'Admissions are open. Visit us or get in touch to learn how your child can become part of our community.',
+      buttonText: 'Contact Us',
+      buttonLink: '/about#contact',
+      image: img('school-community'),
+    },
+  },
+
+  about: {
+    intro: {
+      eyebrow: 'Who We Are',
+      title: 'A Legacy of Excellence at {school}',
+      body:
+        '{school} is a centre of learning dedicated to holistic education. We combine academic rigour with character formation, preparing our learners to excel in a rapidly changing world.\n\nOur committed staff, supportive parents and motivated students work together to create a vibrant community where every learner is known, valued and challenged to grow.',
+      image: img('school-building'),
+      image2: img('students-uniform'),
+      badgeValue: '25+',
+      badgeLabel: 'Years of Excellence',
+    },
+    mission: { icon: 'bullseye', title: 'Our Mission', text: 'To provide quality, holistic education that nurtures learners to become responsible, innovative and productive members of society.' },
+    vision: { icon: 'eye', title: 'Our Vision', text: 'To be a centre of excellence that produces all-round individuals who positively transform society.' },
+    motto: { icon: 'stars', title: 'Our Motto', text: '' },
+    values: {
+      enabled: true,
+      eyebrow: 'What We Stand For',
+      title: 'Our Core Values',
+      items: [
+        { icon: 'shield-check', title: 'Integrity', text: 'Honesty and strong moral principles in all we do.' },
+        { icon: 'award', title: 'Excellence', text: 'Striving for the highest standards in learning and conduct.' },
+        { icon: 'people', title: 'Respect', text: 'Valuing every person and embracing diversity.' },
+        { icon: 'hand-thumbs-up', title: 'Discipline', text: 'Self-control, responsibility and commitment.' },
+        { icon: 'lightbulb', title: 'Innovation', text: 'Curiosity and creativity in solving problems.' },
+        { icon: 'heart', title: 'Service', text: 'Caring for our community and the world around us.' },
+      ],
+    },
+    history: {
+      enabled: true,
+      eyebrow: 'Our Journey',
+      title: 'Milestones Through the Years',
+      items: [
+        { year: '1998', title: 'Foundation', text: '{school} opens its doors to the first class of learners.' },
+        { year: '2005', title: 'Growth', text: 'New classrooms, library and science laboratories are completed.' },
+        { year: '2014', title: 'Recognition', text: 'Recognised regionally for academic and co-curricular excellence.' },
+        { year: '2022', title: 'Modernisation', text: 'ICT integration across all departments and a new sports complex.' },
+      ],
+    },
+    facilities: {
+      enabled: true,
+      eyebrow: 'Our Campus',
+      title: 'Facilities',
+      items: [
+        { icon: 'easel', title: 'Spacious Classrooms', text: 'Bright, well-ventilated classrooms that keep class sizes manageable.', image: img('classroom') },
+        { icon: 'book-half', title: 'Library', text: 'A quiet, well-stocked library for research and reading.', image: img('library-shelves') },
+        { icon: 'bus-front', title: 'School Transport', text: 'Our own school bus for trips, competitions and academic tours.', image: img('school-bus-trip') },
+        { icon: 'tree', title: 'Green Compound', text: 'A calm, well-kept compound with lawns and shaded walkways.', image: img('school-building-wide') },
+      ],
+    },
+    prayer: {
+      enabled: true,
+      title: 'School Prayer',
+      text: 'Almighty God, we thank you for the gift of learning.\nGrant us wisdom to know what is right,\ncourage to do it, and hearts to serve others.\nBless our teachers, our parents and our school.\nAmen.',
+    },
+    anthem: {
+      enabled: true,
+      title: 'School Anthem',
+      text: 'Hail {school}, our pride and home,\nWhere minds are shaped and hearts are grown;\nIn truth and service we will stand,\nStrong to serve our school and land.',
+    },
+    contact: { enabled: true, eyebrow: 'Get In Touch', title: 'Contact & Location' },
+  },
+
+  results: {
+    intro: {
+      enabled: true,
+      examName: 'KCSE',
+      eyebrow: 'Academic Results',
+      title: 'Our {exam} Performance',
+      subtitle: 'Consistent effort, dedicated teachers and personal mentoring reflected in our national examination results.',
+    },
+    years: {
+      items: [
+        {
+          year: '2025', candidates: 298, meanScore: '8.12', meanGrade: 'B-', countyPosition: '4', subCountyPosition: '1', nationalPosition: '',
+          county: 'Nairobi County', universityQualifiers: 214,
+          note: 'Our best results to date, with 214 candidates attaining the minimum university entry grade.',
+          topStudents: [
+            { name: 'Faith Wanjiru', grade: 'A', points: '84', note: 'Top candidate in the county' },
+            { name: 'Kevin Otieno', grade: 'A', points: '82', note: '' },
+            { name: 'Mercy Chebet', grade: 'A-', points: '79', note: '' },
+          ],
+        },
+        {
+          year: '2024', candidates: 276, meanScore: '7.64', meanGrade: 'B-', countyPosition: '6', subCountyPosition: '2', nationalPosition: '',
+          county: 'Nairobi County', universityQualifiers: 181, note: '',
+          topStudents: [
+            { name: 'Brian Kiprono', grade: 'A', points: '81', note: '' },
+            { name: 'Joy Achieng', grade: 'A-', points: '78', note: '' },
+          ],
+        },
+      ],
+    },
+  },
+
+  fees: {
+    intro: {
+      eyebrow: 'For Parents',
+      title: 'Fee Structure',
+      text: 'Fees are payable to the school bank account only. Always quote the learner’s admission number as the payment reference.',
+      bank: 'Bank: Equity Bank · Account: Greenfield School · A/C No. 0000000000',
+      mpesa: 'M-Pesa Paybill 000000 · Account: admission number',
+      contact: 'For fee queries, contact the bursar’s office during working hours.',
+    },
+    documents: {
+      items: [],
+    },
+  },
+
+  pages: {
+    home: { label: 'Home', showInNav: true },
+    about: { label: 'About', showInNav: true, title: 'About {school}', subtitle: 'Our story, mission, vision and the values that guide us.', image: img('school-building-wide') },
+    departments: { label: 'Departments', showInNav: true, title: 'Academic Departments', subtitle: 'Explore our departments and meet the heads who lead them.', image: img('classroom') },
+    structure: { label: 'School Structure', showInNav: true, title: 'School Structure', subtitle: 'How leadership and responsibility flow across {school}.', image: img('staff-and-students') },
+    staff: { label: 'Our Staff', showInNav: true, title: 'Our Teachers & Staff', subtitle: 'From the principal to our heads of department — the people who make {school} great.', image: img('school-community') },
+    prefects: { label: 'Prefects', showInNav: true, title: 'Student Leadership', subtitle: 'Meet the prefects body, led by our head boy and head girl.', image: img('students-front-row') },
+    gallery: { label: 'Gallery', showInNav: true, title: 'Photo Gallery', subtitle: 'Moments that capture life at {school}.', image: img('school-bus-trip') },
+    news: { label: 'News & Events', showInNav: true, title: 'News & Events', subtitle: 'Stay informed about what is happening at {school}.', image: img('library') },
+    results: { label: 'Results', showInNav: true, title: '{exam} Results', subtitle: 'Our national examination performance over the years.', image: img('students-front-row') },
+    fees: { label: 'Fees', showInNav: true, title: 'Fee Structure', subtitle: 'Current fee structures for every class, with payment details.', image: img('school-building-wide') },
+    portal: {
+      label: 'Portal',
+      showInNav: true,
+      title: 'Welcome back',
+      subtitle: 'Sign in to the {school} portal to continue.',
+      image: img('students-uniform'),
+      note: 'Authorised users only. Contact the school administrator if you need access.',
+    },
+  },
+
+  tiers: {
+    staff: [
+      { key: 'principal', label: 'Principal' },
+      { key: 'deputy', label: 'Deputy Principals' },
+      { key: 'dean', label: 'Senior Management' },
+      { key: 'hod', label: 'Heads of Department' },
+      { key: 'teacher', label: 'Teaching Staff' },
+      { key: 'support', label: 'Support Staff' },
+    ],
+    prefects: [
+      { key: 'head', label: 'Head Prefects', showPhotos: true },
+      { key: 'deputy', label: 'Deputy Head Prefects', showPhotos: true },
+      { key: 'senior', label: 'Senior Prefects', showPhotos: false },
+      { key: 'prefect', label: 'Prefects', showPhotos: false },
+    ],
+  },
+};
+
+/* ------------------------------------------------------------------------- */
+/* Optional sample records loaded by the setup wizard                          */
+/* ------------------------------------------------------------------------- */
+
+export const SAMPLE = {
+  departments: [
+    { key: 'sci', image: img('classroom-desks'), name: 'Sciences', icon: 'flask', summary: 'Biology, Chemistry and Physics taught through inquiry and experimentation.' },
+    { key: 'math', image: img('classroom'), name: 'Mathematics', icon: 'calculator', summary: 'Building logical reasoning, numeracy and problem-solving skills.' },
+    { key: 'lang', image: img('library'), name: 'Languages', icon: 'translate', summary: 'English, Kiswahili and foreign languages for effective communication.' },
+    { key: 'hum', image: img('library-shelves'), name: 'Humanities', icon: 'globe-europe-africa', summary: 'History, Geography and Religious Education for informed citizenship.' },
+    { key: 'tech', image: img('school-building'), name: 'Technical & Applied Sciences', icon: 'cpu', summary: 'Computer Studies, Agriculture and Business for practical skills.' },
+    { key: 'arts', image: img('school-bus-trip'), name: 'Creative Arts & Sports', icon: 'palette', summary: 'Music, Art and Physical Education to nurture talent.' },
+    { key: 'guid', image: img('staff-and-students'), name: 'Guidance & Counselling', icon: 'heart-pulse', summary: 'Supporting learners’ wellbeing, discipline and career choices.' },
+  ],
+  staff: [
+    { key: 'p', name: 'Dr. Margaret Achieng', position: 'Principal', tier: 'principal', featured: 1, photo: person('principal'), qualifications: 'PhD Educational Leadership', bio: 'Leads the school with a focus on academic excellence, discipline and holistic growth.' },
+    { key: 'd1', name: 'Mr. Joseph Kamau', position: 'Deputy Principal (Academics)', tier: 'deputy', parent: 'p', featured: 1, photo: person('deputy-academics'), qualifications: 'M.Ed Curriculum Studies' },
+    { key: 'd2', name: 'Mrs. Faith Njeri', position: 'Deputy Principal (Administration)', tier: 'deputy', parent: 'p', featured: 1, photo: person('deputy-admin'), qualifications: 'M.Ed Administration' },
+    { key: 'dos', name: 'Mr. Peter Otieno', position: 'Director of Studies', tier: 'dean', parent: 'd1', featured: 1, photo: person('director-studies'), qualifications: 'B.Ed Mathematics' },
+    { key: 'h-sci', name: 'Mr. Samuel Mwangi', position: 'Head of Sciences', tier: 'hod', parent: 'dos', dept: 'sci', qualifications: 'B.Sc Ed Chemistry & Biology' },
+    { key: 'h-math', name: 'Ms. Lucy Wambui', position: 'Head of Mathematics', tier: 'hod', parent: 'dos', dept: 'math', qualifications: 'B.Ed Mathematics & Physics' },
+    { key: 'h-lang', name: 'Mrs. Grace Atieno', position: 'Head of Languages', tier: 'hod', parent: 'dos', dept: 'lang', photo: person('hod-languages'), qualifications: 'B.A Ed English & Literature' },
+    { key: 'h-hum', name: 'Mr. David Kiprono', position: 'Head of Humanities', tier: 'hod', parent: 'dos', dept: 'hum', qualifications: 'B.Ed History & Geography' },
+    { key: 'h-tech', name: 'Mr. Brian Mutua', position: 'Head of Technical Subjects', tier: 'hod', parent: 'dos', dept: 'tech', qualifications: 'B.Sc Computer Science' },
+    { key: 'h-arts', name: 'Ms. Esther Chebet', position: 'Head of Creative Arts & Sports', tier: 'hod', parent: 'd2', dept: 'arts', qualifications: 'B.Ed Music & PE' },
+    { key: 'h-guid', name: 'Mrs. Ruth Nyambura', position: 'Head of Guidance & Counselling', tier: 'hod', parent: 'd2', dept: 'guid', qualifications: 'M.A Counselling Psychology' },
+    { name: 'Mr. Kevin Ouma', position: 'Biology Teacher', tier: 'teacher', parent: 'h-sci', dept: 'sci' },
+    { name: 'Ms. Mercy Wanjiku', position: 'Chemistry Teacher', tier: 'teacher', parent: 'h-sci', dept: 'sci' },
+    { name: 'Mr. Collins Kiptoo', position: 'Physics Teacher', tier: 'teacher', parent: 'h-sci', dept: 'sci' },
+    { name: 'Mrs. Janet Akinyi', position: 'Mathematics Teacher', tier: 'teacher', parent: 'h-math', dept: 'math' },
+    { name: 'Mr. Dennis Kariuki', position: 'Mathematics Teacher', tier: 'teacher', parent: 'h-math', dept: 'math' },
+    { name: 'Ms. Sharon Moraa', position: 'English Teacher', tier: 'teacher', parent: 'h-lang', dept: 'lang' },
+    { name: 'Mr. Hassan Omar', position: 'Kiswahili Teacher', tier: 'teacher', parent: 'h-lang', dept: 'lang' },
+    { name: 'Mrs. Alice Nekesa', position: 'Geography Teacher', tier: 'teacher', parent: 'h-hum', dept: 'hum' },
+    { name: 'Mr. Victor Njoroge', position: 'Computer Studies Teacher', tier: 'teacher', parent: 'h-tech', dept: 'tech' },
+    { name: 'Mrs. Rose Wairimu', position: 'School Bursar', tier: 'support', parent: 'd2' },
+    { name: 'Mr. James Kibet', position: 'Librarian', tier: 'support', parent: 'd2' },
+  ],
+  prefects: [
+    { name: 'Brian Omondi', position: 'Head Boy', tier: 'head', class_name: 'Form 4 East', show_photo: 1, photo: person('head-boy'), quote: 'Leadership is service — and I am here to serve.' },
+    { name: 'Cynthia Wanjiru', position: 'Head Girl', tier: 'head', class_name: 'Form 4 West', show_photo: 1, photo: person('head-girl'), quote: 'Together we can make our school even greater.' },
+    { name: 'Ian Kiprotich', position: 'Deputy Head Boy', tier: 'deputy', class_name: 'Form 4 North', show_photo: 1, photo: person('deputy-head-boy') },
+    { name: 'Diana Akoth', position: 'Deputy Head Girl', tier: 'deputy', class_name: 'Form 4 South', show_photo: 1, photo: person('deputy-head-girl') },
+    { name: 'Kevin Mutiso', position: 'Games Captain', tier: 'senior', class_name: 'Form 4 East' },
+    { name: 'Mary Njoki', position: 'Academics Prefect', tier: 'senior', class_name: 'Form 4 West' },
+    { name: 'Allan Barasa', position: 'Dining Hall Prefect', tier: 'senior', class_name: 'Form 3 North' },
+    { name: 'Faith Chepkoech', position: 'Health Prefect', tier: 'senior', class_name: 'Form 3 South' },
+    { name: 'Tom Wekesa', position: 'Library Prefect', tier: 'senior', class_name: 'Form 3 East' },
+    { name: 'Joy Mumbi', position: 'Entertainment Prefect', tier: 'senior', class_name: 'Form 3 West' },
+    { name: 'Eric Maina', position: 'Class Prefect', tier: 'prefect', class_name: 'Form 2 East' },
+    { name: 'Linet Adhiambo', position: 'Class Prefect', tier: 'prefect', class_name: 'Form 2 West' },
+    { name: 'Moses Langat', position: 'Dormitory Prefect', tier: 'prefect', class_name: 'Form 3 North' },
+    { name: 'Purity Kerubo', position: 'Dormitory Prefect', tier: 'prefect', class_name: 'Form 3 South' },
+    { name: 'Felix Onyango', position: 'Environment Prefect', tier: 'prefect', class_name: 'Form 2 North' },
+    { name: 'Sheila Nduta', position: 'Chapel Prefect', tier: 'prefect', class_name: 'Form 2 South' },
+  ],
+  albums: [
+    { title: 'School Life', images: ['school-community', 'students-uniform', 'students-front-row', 'staff-and-students', 'school-signboard'] },
+    { title: 'Academic Tours', images: ['school-bus-trip', 'school-community', 'students-front-row'] },
+    { title: 'In the Classroom', images: ['classroom', 'classroom-desks', 'library', 'library-shelves'] },
+    { title: 'Our Campus', images: ['school-building', 'school-building-wide', 'school-signboard'] },
+  ],
+  news: [
+    { title: 'Annual Prize Giving Day Celebrates Top Achievers', image: img('school-community'), category: 'news', excerpt: 'Students, parents and staff gathered to celebrate outstanding performance across academics and co-curricular activities.' },
+    { title: 'Inter-School Science Congress', image: img('classroom-desks'), category: 'event', excerpt: 'Our young scientists will showcase innovative projects at the regional science congress.', location: 'School Main Hall', days: 21 },
+    { title: 'New Library Wing Officially Opened', image: img('library'), category: 'news', excerpt: 'A new, fully stocked library wing gives every learner a quiet space for reading and research.' },
+    { title: 'Parents’ Academic Day', image: img('staff-and-students'), category: 'event', excerpt: 'Parents are invited to meet teachers, review progress and discuss learners’ academic plans.', location: 'School Grounds', days: 35 },
+  ],
+};

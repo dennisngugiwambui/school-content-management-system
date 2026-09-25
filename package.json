@@ -1,0 +1,18 @@
+{
+  "name": "school-website",
+  "private": true,
+  "description": "Dynamic school website with a built-in CMS (React client + Node API)",
+  "scripts": {
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start",
+    "pages:build": "node scripts/build-pages.mjs",
+    "pages:preview": "node scripts/preview-pages.mjs",
+    "pages:deploy": "node scripts/build-pages.mjs && gh-pages -d client/dist-pages --dotfiles -m \"Update website\""
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
+}
