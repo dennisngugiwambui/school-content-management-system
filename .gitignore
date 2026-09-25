@@ -1,0 +1,9 @@
+node_modules/
+client/dist/
+client/dist-pages/
+# The database (passwords, sessions) and uploads never go into the repository.
+server/data/
+server/uploads/
+.env
+*.log
+.DS_Store
