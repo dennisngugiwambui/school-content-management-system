@@ -54,7 +54,7 @@ export default function Footer() {
 
           <FooterGroup title="Quick Links" className="col-md-4 col-lg-2" delay={0.1}>
             <ul className="list-none p-0 m-0 grid grid-cols-2 md:grid-cols-1 gap-x-4 gap-y-2.5 text-sm">
-              {nav.items.map((i) => (
+              {nav.items.flatMap((i) => (i.key === 'downloads' ? i.children.map((c) => ({ ...c, key: c.to })) : [i])).map((i) => (
                 <li key={i.key}><Link to={i.to} className="group inline-flex items-center gap-2 hover:text-accent-300 transition-colors"><Icon name="chevron-right" className="text-[0.6rem] text-brand-400 transition-transform group-hover:translate-x-1" />{i.label}</Link></li>
               ))}
             </ul>
@@ -73,7 +73,7 @@ export default function Footer() {
             <ul className="list-none p-0 m-0 space-y-3 md:space-y-4 text-sm">
               {c.address && <li className="flex gap-3"><Icon name="geo-alt-fill" className="text-accent-400 mt-0.5" /><span>{c.address}{c.location && <><br />{c.location}</>}</span></li>}
               {c.phone && <li className="flex gap-3"><Icon name="telephone-fill" className="text-accent-400 mt-0.5" /><span><a href={`tel:${c.phone}`} className="hover:text-white">{c.phone}</a>{c.phone2 && <><br /><a href={`tel:${c.phone2}`} className="hover:text-white">{c.phone2}</a></>}</span></li>}
-              {c.email && <li className="flex gap-3"><Icon name="envelope-fill" className="text-accent-400 mt-0.5" /><a href={`mailto:${c.email}`} className="hover:text-white break-all">{c.email}</a></li>}
+              {c.email && <li className="flex gap-3"><Icon name="envelope-fill" className="text-accent-400 mt-0.5" /><span><a href={`mailto:${c.email}`} className="hover:text-white break-all">{c.email}</a>{c.email2 && <><br /><a href={`mailto:${c.email2}`} className="hover:text-white break-all">{c.email2}</a></>}</span></li>}
               {c.hours && <li className="flex gap-3"><Icon name="clock-fill" className="text-accent-400 mt-0.5" /><span>{c.hours}</span></li>}
             </ul>
           </FooterGroup>

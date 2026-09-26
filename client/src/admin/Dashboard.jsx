@@ -12,8 +12,8 @@ const CARDS = [
   ['staff', 'Teachers & Staff', 'person-badge', '/admin/staff'],
   ['prefects', 'Prefects', 'stars', '/admin/prefects'],
   ['albums', 'Gallery Albums', 'collection', '/admin/gallery'],
-  ['images', 'Photos', 'images', '/admin/gallery'],
   ['news', 'News & Events', 'newspaper', '/admin/news'],
+  ['tenders', 'Tenders', 'file-earmark-text', '/admin/tenders'],
 ];
 
 // Bundled sample photos (and the old remote placeholders) count as not yet replaced.
@@ -31,7 +31,7 @@ export default function Dashboard() {
     { done: settings?.schoolName && !['Our School', 'Greenfield School'].includes(settings.schoolName), label: 'Set the school name & motto', to: '/admin/settings' },
     { done: !content.home?.hero?.slides?.some((s) => isDefaultPhoto(s.image)), label: 'Replace the default homepage photos with your own', to: '/admin/content/home' },
     { done: Boolean(content.home?.welcome?.image) && !isDefaultPhoto(content.home?.welcome?.image), label: 'Add the principal’s photo & message', to: '/admin/content/home' },
-    { done: Boolean(settings?.contact?.mapEmbed), label: 'Add the Google Maps location', to: '/admin/settings' },
+    { done: Boolean(settings?.contact?.mapEmbed || settings?.contact?.mapLocation), label: 'Pin the school on the map (Contact & Map)', to: '/admin/settings' },
     { done: (data?.staff ?? 0) > 0, label: 'Add teachers & staff', to: '/admin/staff' },
   ];
   const progress = Math.round((checklist.filter((c) => c.done).length / checklist.length) * 100);

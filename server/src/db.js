@@ -130,6 +130,25 @@ db.exec(`
     expires_at  INTEGER NOT NULL
   );
 
+  CREATE TABLE IF NOT EXISTS tenders (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    title         TEXT NOT NULL,
+    reference     TEXT DEFAULT '',
+    category      TEXT DEFAULT '',
+    description   TEXT DEFAULT '',
+    file          TEXT DEFAULT '',
+    file_name     TEXT DEFAULT '',
+    file_size     INTEGER NOT NULL DEFAULT 0,
+    opening_date  TEXT DEFAULT '',
+    closing_date  TEXT DEFAULT '',
+    status        TEXT NOT NULL DEFAULT 'open',
+    awarded_to    TEXT DEFAULT '',
+    is_published  INTEGER NOT NULL DEFAULT 1,
+    sort_order    INTEGER NOT NULL DEFAULT 0,
+    created_at    TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+
   CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
   CREATE INDEX IF NOT EXISTS idx_staff_dept   ON staff(department_id);
   CREATE INDEX IF NOT EXISTS idx_staff_parent ON staff(parent_id);

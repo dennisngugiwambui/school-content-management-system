@@ -19,6 +19,7 @@ export const ADMIN_NAV = [
       { to: '/admin/content/about', label: 'About Page', icon: 'info-circle' },
       { to: '/admin/content/results', label: 'Exam Results', icon: 'award' },
       { to: '/admin/content/fees', label: 'Fee Structure', icon: 'cash-coin' },
+      { to: '/admin/content/promo', label: 'Promotions', icon: 'megaphone' },
       { to: '/admin/content/pages', label: 'Page Banners & Menu', icon: 'menu-button-wide' },
       { to: '/admin/content/tiers', label: 'Hierarchy Levels', icon: 'diagram-3' },
     ],
@@ -31,6 +32,7 @@ export const ADMIN_NAV = [
       { to: '/admin/prefects', label: 'Prefects', icon: 'stars' },
       { to: '/admin/gallery', label: 'Gallery', icon: 'images' },
       { to: '/admin/news', label: 'News & Events', icon: 'newspaper' },
+      { to: '/admin/tenders', label: 'Tenders', icon: 'file-earmark-text' },
     ],
   },
   {

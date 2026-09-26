@@ -69,6 +69,7 @@ export default function ContentEditor() {
                   fields={s.fields}
                   value={sectionValue}
                   onChange={(v) => setValue(s.whole ? v : { ...value, [s.key]: v })}
+                  ctx={{ content: value }}
                 />
               </Accordion.Body>
             </Accordion.Item>

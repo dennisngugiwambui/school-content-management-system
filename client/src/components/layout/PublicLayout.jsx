@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
 import Header from './Header';
 import Footer from './Footer';
 import WhatsAppChat from '../WhatsAppChat';
+import { PromoPopup } from '../Promo';
 import { Icon } from '../ui';
 
 function ScrollManager() {
@@ -69,6 +70,7 @@ export default function PublicLayout() {
       <Footer />
       <BackToTop />
       <WhatsAppChat />
+      <PromoPopup />
     </div>
   );
 }

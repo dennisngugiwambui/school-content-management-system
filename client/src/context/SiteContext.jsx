@@ -30,10 +30,18 @@ export function SiteProvider({ children }) {
     if (icon) icon.href = asset(settings.favicon || settings.logo) || '/favicon.svg';
   }, [settings]);
 
-  /** Replace the {school} and {exam} tokens so texts follow the school name and the exam name (KCSE, KJSEA…). */
+  /**
+   * Replace the {school} and {exam} tokens so texts follow the school name and the exam name (KCSE, KJSEA…),
+   * and {year} / {nextYear} so yearly notices (admissions) stay current.
+   */
   const examName = state.content?.results?.intro?.examName || 'KCSE';
   const fill = useCallback(
-    (text) => (typeof text === 'string' ? text.replaceAll('{school}', schoolName).replaceAll('{exam}', examName) : text ?? ''),
+    (text) => {
+      if (typeof text !== 'string') return text ?? '';
+      const year = new Date().getFullYear();
+      return text.replaceAll('{school}', schoolName).replaceAll('{exam}', examName)
+        .replaceAll('{nextYear}', String(year + 1)).replaceAll('{year}', String(year));
+    },
     [schoolName, examName]
   );
 

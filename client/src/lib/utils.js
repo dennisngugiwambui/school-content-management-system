@@ -22,3 +22,29 @@ export function groupByTier(items, tiers) {
 }
 
 export const isExternal = (href = '') => /^(https?:)?\/\//.test(href) || href.startsWith('mailto:') || href.startsWith('tel:');
+
+/** Human file size, e.g. 1.4 MB. */
+export function fileSize(bytes) {
+  const n = Number(bytes) || 0;
+  if (!n) return '';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.min(units.length - 1, Math.floor(Math.log(n) / Math.log(1024)));
+  return `${(n / 1024 ** i).toFixed(i > 1 ? 1 : 0)} ${units[i]}`;
+}
+
+/** The place shown on the map: the admin's map location, else the physical location, else the address. */
+export const mapPlace = (c = {}) => String(c.mapLocation || c.location || c.address || '').trim();
+
+/**
+ * Google Maps embed URL for the contact settings. A pasted embed code (or its URL) wins;
+ * otherwise the map is built from a place name, address or "lat, lng" coordinates.
+ */
+export function mapEmbedSrc(c = {}) {
+  const pasted = String(c.mapEmbed || '').trim();
+  const src = pasted.match(/src="([^"]+)"/)?.[1] || (/^https:\/\/(www\.)?google\.[a-z.]+\/maps/.test(pasted) ? pasted : '');
+  if (src) return src;
+  const place = mapPlace(c);
+  return place ? `https://maps.google.com/maps?q=${encodeURIComponent(place)}&z=15&output=embed` : '';
+}
+
+export const directionsUrl = (c = {}) => (mapPlace(c) ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(mapPlace(c))}` : '');

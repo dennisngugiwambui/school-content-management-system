@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useSite } from '../context/SiteContext';
-import { cx } from '../lib/utils';
+import { cx, mapEmbedSrc, directionsUrl } from '../lib/utils';
 import PageHeader from '../components/layout/PageHeader';
 import Timeline from '../components/Timeline';
 import { Icon, Reveal, RichText, SectionHeading, SmartImage } from '../components/ui';
@@ -151,31 +151,41 @@ function Heritage({ prayer, anthem }) {
   );
 }
 
+const telHref = (n) => `tel:${String(n).replace(/[^\d+]/g, '')}`;
+
+/** Contact cards beside a Google map of the school (from the location set under Branding & Settings). */
 function Contact({ data }) {
-  const { settings, fill } = useSite();
+  const { settings, fill, schoolName } = useSite();
   const c = settings?.contact ?? {};
   if (!data?.enabled) return null;
+  const phones = [c.phone, c.phone2].filter(Boolean);
+  const emails = [c.email, c.email2].filter(Boolean);
   const rows = [
-    ['geo-alt-fill', 'Address', [c.address, c.location].filter(Boolean).join(', ')],
-    ['telephone-fill', 'Phone', [c.phone, c.phone2].filter(Boolean).join(' / '), c.phone && `tel:${c.phone}`],
-    ['envelope-fill', 'Email', c.email, c.email && `mailto:${c.email}`],
-    ['clock-fill', 'Office Hours', c.hours],
-  ].filter((r) => r[2]);
-  const mapSrc = (c.mapEmbed || '').match(/src="([^"]+)"/)?.[1] || (c.mapEmbed?.startsWith('http') ? c.mapEmbed : '');
+    { icon: 'geo-alt-fill', label: 'Location', lines: [c.location, c.address].filter(Boolean).map((v) => ({ text: v })) },
+    { icon: 'telephone-fill', label: phones.length > 1 ? 'Phone numbers' : 'Phone', lines: phones.map((p) => ({ text: p, href: telHref(p) })) },
+    { icon: 'envelope-fill', label: emails.length > 1 ? 'Emails' : 'Email', lines: emails.map((e) => ({ text: e, href: `mailto:${e}` })) },
+    { icon: 'clock-fill', label: 'Office hours', lines: c.hours ? [{ text: c.hours }] : [] },
+  ].filter((r) => r.lines.length);
+  const mapSrc = mapEmbedSrc(c);
+  const directions = directionsUrl(c);
   return (
-    <section id="contact" className="section scroll-mt-24">
+    <section id="contact" className="section scroll-mt-24 bg-slate-50">
       <div className="container">
         <SectionHeading eyebrow={data.eyebrow} title={fill(data.title)} />
         <div className="row g-4">
           <div className={mapSrc ? 'col-lg-5' : 'col-12'}>
-            <div className={cx('grid gap-4', !mapSrc && 'sm:grid-cols-2 lg:grid-cols-4')}>
-              {rows.map(([icon, label, value, href], k) => (
-                <Reveal key={label} delay={k * 0.08}>
-                  <div className="group flex items-center gap-4 h-full rounded-2xl bg-white p-5 ring-1 ring-slate-100 shadow-sm hover:shadow-soft transition">
-                    <span className="grid place-items-center h-14 w-14 shrink-0 rounded-2xl bg-brand-50 text-brand-700 text-xl transition group-hover:bg-brand-600 group-hover:text-white"><Icon name={icon} /></span>
+            <div className={cx('grid gap-3 sm:gap-4', mapSrc ? 'sm:grid-cols-2 lg:grid-cols-1' : 'sm:grid-cols-2 lg:grid-cols-4')}>
+              {rows.map((r, k) => (
+                <Reveal key={r.label} delay={k * 0.08}>
+                  <div className="group flex items-start gap-4 h-full rounded-theme-lg bg-white p-4 sm:p-5 ring-1 ring-slate-200/80 shadow-sm hover:shadow-soft hover:ring-brand-200 transition">
+                    <span className="grid place-items-center h-12 w-12 shrink-0 rounded-2xl bg-brand-50 text-brand-700 text-lg transition group-hover:bg-brand-600 group-hover:text-white"><Icon name={r.icon} /></span>
                     <div className="min-w-0">
-                      <p className="m-0 text-xs uppercase tracking-wider text-slate-400">{label}</p>
-                      {href ? <a href={href} className="font-semibold text-slate-800 hover:text-brand-700 break-words">{value}</a> : <p className="m-0 font-semibold text-slate-800">{value}</p>}
+                      <p className="m-0 text-[0.7rem] uppercase tracking-wider text-slate-400">{r.label}</p>
+                      {r.lines.map((l) => (
+                        l.href
+                          ? <a key={l.text} href={l.href} className="block font-semibold text-slate-800 hover:text-brand-700 break-words">{l.text}</a>
+                          : <p key={l.text} className="m-0 font-semibold text-slate-800 break-words">{l.text}</p>
+                      ))}
                     </div>
                   </div>
                 </Reveal>
@@ -183,8 +193,15 @@ function Contact({ data }) {
             </div>
           </div>
           {mapSrc && (
-            <Reveal className="col-lg-7" delay={0.2}>
-              <iframe title="School location map" src={mapSrc} className="h-full min-h-[360px] w-full rounded-theme-lg shadow-soft ring-1 ring-slate-100" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+            <Reveal className="col-lg-7" delay={0.15}>
+              <div className="relative h-full min-h-[320px] sm:min-h-[400px] overflow-hidden rounded-theme-lg bg-white p-1.5 shadow-soft ring-1 ring-slate-200/80">
+                <iframe title={`Map showing ${schoolName}`} src={mapSrc} className="absolute inset-1.5 h-[calc(100%-0.75rem)] w-[calc(100%-0.75rem)] rounded-theme" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+                {directions && (
+                  <a href={directions} target="_blank" rel="noreferrer" className="btn-brand absolute bottom-4 left-4 !px-4 !py-2.5 text-sm">
+                    <Icon name="sign-turn-right-fill" />Get directions
+                  </a>
+                )}
+              </div>
             </Reveal>
           )}
         </div>

@@ -1,4 +1,5 @@
 import { HERO_EFFECTS } from '../pages/home/Hero';
+import { gradeScale } from '../lib/results';
 
 /**
  * CMS editor definitions. Each content key maps to sections; each section edits
@@ -220,9 +221,11 @@ export const CONTENT_SCHEMAS = {
         ['news', 'News & Events', 'newspaper', true],
         ['results', 'Exam Results', 'award', true],
         ['fees', 'Fee Structure', 'cash-coin', true],
+        ['tenders', 'Tenders', 'file-earmark-text', true],
       ].map(([key, title, icon, banner]) => ({
         key, title, icon,
         fields: [
+          ...(key === 'tenders' ? [{ key: 'note', label: 'How to submit bids (shown on the Tenders page)', type: 'textarea', rows: 2 }] : []),
           { key: 'label', label: 'Menu label', col: 'col-md-6' },
           { key: 'showInNav', type: 'switch', label: 'Show in menu', col: 'col-md-6' },
           ...(banner ? [
@@ -257,6 +260,7 @@ export const CONTENT_SCHEMAS = {
         fields: [
           { key: 'enabled', type: 'switch', label: 'Show the latest results on the home page', col: 'col-12' },
           { key: 'examName', label: 'Exam name (e.g. KCSE, KJSEA, KPSEA)', col: 'col-md-4' },
+          { key: 'gradeScale', label: 'Grades, best first, separated by commas', col: 'col-12', help: 'Used for the grade distribution of each year. KCSE: A, A-, B+, B, B-, C+, C, C-, D+, D, D-, E' },
           { key: 'eyebrow', label: 'Small label', col: 'col-md-4' },
           { key: 'title', label: 'Title (the year is added after it)', col: 'col-md-4' },
           { key: 'subtitle', label: 'Text shown when a year has no note', type: 'textarea', rows: 2 },
@@ -279,6 +283,10 @@ export const CONTENT_SCHEMAS = {
             { key: 'nationalPosition', label: 'National position', col: 'col-md-3' },
             { key: 'universityQualifiers', type: 'number', label: 'University qualifiers', col: 'col-md-4' },
             { key: 'note', label: 'Short note about this year', type: 'textarea', rows: 2 },
+            {
+              key: 'grades', type: 'counts', label: 'Grade distribution (number of candidates per grade)', keys: (ctx) => gradeScale(ctx.content?.intro?.gradeScale),
+              totalLabel: 'Total candidates entered', help: 'Optional. Shown as a chart and in the results table. Leave empty to hide.',
+            },
             {
               key: 'topStudents', type: 'list', label: 'Top candidates (best first)', singular: 'candidate', plural: 'candidates',
               itemLabel: (t) => `${t.name || 'Candidate'} — ${t.grade || ''}`,
@@ -324,6 +332,59 @@ export const CONTENT_SCHEMAS = {
           { key: 'bank', label: 'Bank details', col: 'col-md-6' },
           { key: 'mpesa', label: 'M-Pesa details', col: 'col-md-6' },
           { key: 'contact', label: 'Who to contact for fee queries' },
+        ],
+      },
+    ],
+  },
+
+  promo: {
+    title: 'Promotions',
+    description: 'Advertise admissions, open days or any announcement on the home page: a pop-up when visitors arrive and/or a highlighted banner. Use {nextYear} or {year} to insert the year and {school} for the school name.',
+    preview: '/',
+    sections: [
+      {
+        key: 'popup', title: 'Pop-up Promotion', icon: 'window-stack', help: 'Appears a few seconds after a visitor arrives. Visitors can close it.',
+        fields: [
+          { key: 'enabled', type: 'switch', label: 'Show the pop-up', col: 'col-md-6' },
+          {
+            key: 'where', type: 'select', label: 'Show on', col: 'col-md-3', empty: false,
+            options: [{ value: 'home', label: 'Home page only' }, { value: 'all', label: 'Every page' }],
+          },
+          {
+            key: 'frequency', type: 'select', label: 'How often', col: 'col-md-3', empty: false,
+            options: [{ value: 'session', label: 'Once per visit' }, { value: 'day', label: 'Once a day' }, { value: 'always', label: 'Every time' }],
+          },
+          { key: 'image', type: 'image', label: 'Image (optional)', col: 'col-md-5' },
+          { key: '_', type: 'heading', label: 'Message', col: 'col-md-7' },
+          { key: 'badge', label: 'Badge (e.g. Admissions Open)', col: 'col-md-7' },
+          { key: 'title', label: 'Headline', col: 'col-md-7' },
+          { key: 'text', label: 'Text', type: 'textarea', rows: 3 },
+          { key: 'buttonText', label: 'Button 1 text', col: 'col-md-3' },
+          { key: 'buttonLink', label: 'Button 1 link', col: 'col-md-3', placeholder: '/about#contact' },
+          { key: 'button2Text', label: 'Button 2 text', col: 'col-md-3' },
+          { key: 'button2Link', label: 'Button 2 link', col: 'col-md-3' },
+          { key: 'delay', type: 'number', label: 'Show after (seconds)', col: 'col-md-4' },
+          { key: 'startDate', type: 'date', label: 'Start showing on (optional)', col: 'col-md-4' },
+          { key: 'endDate', type: 'date', label: 'Stop showing after (optional)', col: 'col-md-4' },
+        ],
+      },
+      {
+        key: 'banner', title: 'Home Page Banner', icon: 'megaphone', help: 'A highlighted band right below the slider, with an optional countdown to a deadline.',
+        fields: [
+          { key: 'enabled', type: 'switch', label: 'Show the banner', col: 'col-12' },
+          { key: 'image', type: 'image', label: 'Image (optional)', col: 'col-md-5' },
+          { key: '_', type: 'heading', label: 'Message', col: 'col-md-7' },
+          { key: 'badge', label: 'Badge', col: 'col-md-7' },
+          { key: 'title', label: 'Headline', col: 'col-md-7' },
+          { key: 'text', label: 'Text', type: 'textarea', rows: 2 },
+          { key: 'buttonText', label: 'Button 1 text', col: 'col-md-3' },
+          { key: 'buttonLink', label: 'Button 1 link', col: 'col-md-3' },
+          { key: 'button2Text', label: 'Button 2 text', col: 'col-md-3' },
+          { key: 'button2Link', label: 'Button 2 link', col: 'col-md-3' },
+          { key: 'deadline', type: 'date', label: 'Countdown to (optional)', col: 'col-md-4', help: 'e.g. the application deadline' },
+          { key: 'deadlineLabel', label: 'Countdown label', col: 'col-md-8' },
+          { key: 'startDate', type: 'date', label: 'Start showing on (optional)', col: 'col-md-6' },
+          { key: 'endDate', type: 'date', label: 'Stop showing after (optional)', col: 'col-md-6' },
         ],
       },
     ],
@@ -390,13 +451,17 @@ export const SETTINGS_TABS = [
   {
     key: 'contact', title: 'Contact & Map', icon: 'telephone', nested: 'contact',
     fields: [
-      { key: 'phone', label: 'Phone', col: 'col-md-6' },
-      { key: 'phone2', label: 'Alternative phone', col: 'col-md-6' },
-      { key: 'email', label: 'Email', col: 'col-md-6' },
+      { key: '_', type: 'heading', label: 'Phone numbers & emails', icon: 'telephone', help: 'Shown in the top bar, the footer, the About page and the mobile menu.' },
+      { key: 'phone', label: 'Main phone', col: 'col-md-6', placeholder: '+254 7XX XXX XXX' },
+      { key: 'phone2', label: 'Other phone (optional)', col: 'col-md-6' },
+      { key: 'email', type: 'email', label: 'Main email', col: 'col-md-6' },
+      { key: 'email2', type: 'email', label: 'Other email (optional, e.g. admissions)', col: 'col-md-6' },
       { key: 'hours', label: 'Office hours', col: 'col-md-6' },
       { key: 'address', label: 'Postal address', col: 'col-md-6' },
-      { key: 'location', label: 'Physical location', col: 'col-md-6' },
-      { key: 'mapEmbed', label: 'Google Maps embed', type: 'textarea', rows: 3, help: 'In Google Maps: Share → Embed a map → copy HTML, then paste it here.' },
+      { key: '__', type: 'heading', label: 'Location & map', icon: 'geo-alt', help: 'The map on the About page (Contact & Location) pins this place. Check the preview below.' },
+      { key: 'location', label: 'Physical location (shown as text)', col: 'col-md-6', placeholder: 'Greenfield Road, Nairobi' },
+      { key: 'mapLocation', label: 'Place to pin on the map', col: 'col-md-6', placeholder: 'School name and town, or -1.2921, 36.8219', help: 'A place name as Google Maps knows it, or GPS coordinates. Empty = the physical location.' },
+      { key: 'mapEmbed', label: 'Or paste a Google Maps embed code (advanced, optional)', type: 'textarea', rows: 2, help: 'Google Maps → Share → Embed a map → Copy HTML. This overrides the place above.' },
     ],
   },
   {

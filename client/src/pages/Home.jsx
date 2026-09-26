@@ -11,6 +11,7 @@ import Lightbox from '../components/Lightbox';
 import Timeline from '../components/Timeline';
 import BreakImage from '../components/BreakImage';
 import Hero from './home/Hero';
+import { PromoBanner } from '../components/Promo';
 import { ResultsHighlight } from './Results';
 
 /** Counters on a white strip that overlaps the bottom of the hero. */
@@ -230,22 +231,42 @@ function NewsEvents({ newsCfg, eventsCfg, news, events }) {
   );
 }
 
+const today = () => new Date().toISOString().slice(0, 10);
+
+/** News / event card: photo with a date badge, meta line, headline and a full-width "View details" button. */
 export function NewsCard({ item, breakStyle }) {
+  const isEvent = item.category === 'event';
+  const when = isEvent && item.event_date ? item.event_date : item.created_at;
+  const upcoming = isEvent && item.event_date && item.event_date >= today();
   return (
     <Link to={`/news/${item.slug}`} className="group flex h-full flex-col overflow-hidden rounded-theme-lg bg-white shadow-soft ring-1 ring-slate-100 card-lift">
       <div className="relative">
         {breakStyle && item.image
           ? <BreakImage src={item.image} alt={item.title} variant={breakStyle} className="aspect-[16/10]" />
           : <SmartImage src={item.image} alt={item.title} icon="newspaper" zoom className="aspect-[16/10]" />}
-        <span className={cx('absolute left-4 top-4 rounded-full px-3 py-1 text-[0.7rem] font-bold uppercase tracking-wider shadow', item.category === 'event' ? 'bg-accent-400 text-ink-900' : 'bg-brand-600 text-white')}>
-          {item.category === 'event' ? 'Event' : 'News'}
+        <span className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink-950/35 to-transparent" />
+        <span className={cx('absolute left-3 top-3 sm:left-4 sm:top-4 rounded-full px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider shadow', isEvent ? 'bg-accent-400 text-ink-900' : 'bg-white/95 text-brand-800')}>
+          {isEvent ? (upcoming ? 'Upcoming event' : 'Event') : 'News'}
         </span>
+        {when && (
+          <span className="absolute right-3 top-3 sm:right-4 sm:top-4 min-w-[3.6rem] rounded-xl bg-brand-600 px-2.5 py-1.5 text-center text-white shadow-lg ring-2 ring-white/70 transition-transform duration-500 group-hover:-translate-y-0.5">
+            <span className="block font-heading text-2xl font-extrabold leading-none">{formatDate(when, { day: '2-digit' })}</span>
+            <span className="mt-0.5 block text-[0.62rem] font-bold uppercase tracking-[0.15em] text-white/85">{formatDate(when, { month: 'short' })}</span>
+          </span>
+        )}
       </div>
-      <div className="flex flex-1 flex-col p-6">
-        <p className="mb-2 text-xs font-medium text-slate-400"><Icon name="calendar3" className="mr-1.5 text-brand-600" />{formatDate(item.category === 'event' && item.event_date ? item.event_date : item.created_at)}</p>
-        <h3 className="text-lg font-bold leading-snug group-hover:text-brand-700 transition-colors line-clamp-2">{item.title}</h3>
-        <p className="text-sm text-slate-500 line-clamp-3 flex-1">{item.excerpt}</p>
-        <span className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-brand-700">Read more <Icon name="arrow-right" className="transition-transform group-hover:translate-x-1" /></span>
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <p className="m-0 mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8rem] text-slate-500">
+          <span className="inline-flex items-center gap-1.5"><Icon name="calendar-event" className="text-brand-600" />{formatDate(when, { month: 'long', day: '2-digit', year: 'numeric' })}</span>
+          {isEvent && item.location && <span className="inline-flex min-w-0 items-center gap-1.5"><Icon name="geo-alt" className="text-brand-600" /><span className="truncate">{item.location}</span></span>}
+        </p>
+        <h3 className="m-0 text-[1.02rem] sm:text-[1.08rem] font-extrabold uppercase leading-snug tracking-[0.01em] text-slate-900 transition-colors group-hover:text-brand-700 line-clamp-2">{item.title}</h3>
+        {item.excerpt && <p className="m-0 mt-2.5 text-sm leading-relaxed text-slate-500 line-clamp-2">{item.excerpt}</p>}
+        <span className="mt-auto pt-5">
+          <span className="flex w-full items-center justify-center gap-2 rounded-theme bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 group-hover:bg-brand-700 group-hover:shadow-glow">
+            View details <Icon name="arrow-right" className="transition-transform duration-300 group-hover:translate-x-1" />
+          </span>
+        </span>
       </div>
     </Link>
   );
@@ -352,6 +373,7 @@ export default function Home() {
     <>
       <Hero hero={home.hero} />
       <Stats data={home.stats} />
+      <PromoBanner />
       <WhyUs data={home.features} />
       <Welcome data={home.welcome} />
       <Journey data={home.journey} />

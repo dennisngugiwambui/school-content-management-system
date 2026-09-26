@@ -37,6 +37,9 @@ export function downloadUrl(url, name = '') {
   return `${BASE}/api/public/download?url=${encodeURIComponent(url)}${name ? `&name=${encodeURIComponent(name)}` : ''}`;
 }
 
+/** Link that downloads a tender document under a readable name. */
+export const tenderDownloadUrl = (t) => (STATIC ? asset(t.file) : `${BASE}/api/public/tenders/${t.id}/download`);
+
 /** Link to a ZIP of several photos (an album or the fee structures). */
 export const zipUrl = (path) => (STATIC ? `${PUBLIC_BASE}data/${staticName(path)}.zip` : `${BASE}/api/public${path}`);
 
@@ -97,5 +100,11 @@ export const api = {
     [].concat(files).forEach((f) => fd.append('files', f));
     const { files: out } = await request('POST', '/admin/upload', fd);
     return out;
+  },
+  /** Upload one PDF / Word / Excel document; resolves to { url, name, size }. */
+  uploadDocument(file) {
+    const fd = new FormData();
+    fd.append('file', file);
+    return request('POST', '/admin/upload-document', fd);
   },
 };

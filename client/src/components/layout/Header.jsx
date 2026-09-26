@@ -139,8 +139,12 @@ function MobileMenu({ open, onClose, nav }) {
             <div className="p-4 border-t border-slate-100 space-y-3">
               {nav.portal && <Link to={nav.portal.to} onClick={onClose} className="btn-brand w-full"><Icon name="box-arrow-in-right" />{nav.portal.label}</Link>}
               <div className="text-xs text-slate-500 space-y-1">
-                {settings?.contact?.phone && <div><Icon name="telephone" className="text-brand-600 mr-2" />{settings.contact.phone}</div>}
-                {settings?.contact?.email && <div><Icon name="envelope" className="text-brand-600 mr-2" />{settings.contact.email}</div>}
+                {[settings?.contact?.phone, settings?.contact?.phone2].filter(Boolean).map((p) => (
+                  <a key={p} href={`tel:${p.replace(/[^\d+]/g, '')}`} className="block hover:text-brand-700"><Icon name="telephone" className="text-brand-600 mr-2" />{p}</a>
+                ))}
+                {[settings?.contact?.email, settings?.contact?.email2].filter(Boolean).map((e) => (
+                  <a key={e} href={`mailto:${e}`} className="block break-all hover:text-brand-700"><Icon name="envelope" className="text-brand-600 mr-2" />{e}</a>
+                ))}
               </div>
             </div>
           </motion.aside>

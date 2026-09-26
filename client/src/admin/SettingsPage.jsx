@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { api } from '../lib/api';
 import { applyTheme, THEME_PRESETS } from '../lib/color';
 import { useSite } from '../context/SiteContext';
-import { cx } from '../lib/utils';
+import { cx, mapEmbedSrc } from '../lib/utils';
 import { Icon } from '../components/ui';
 import SchemaForm from './fields/SchemaForm';
 import { SETTINGS_TABS } from './schemas';
@@ -116,6 +116,14 @@ export default function SettingsPage() {
               </div>
             )}
             <SchemaForm fields={current.fields} value={formValue} onChange={onFormChange} />
+            {tab === 'contact' && (
+              <div className="mt-5">
+                <p className="form-label">Map preview (as shown on the About page)</p>
+                {mapEmbedSrc(value.contact)
+                  ? <iframe title="Map preview" src={mapEmbedSrc(value.contact)} className="h-72 w-full rounded-xl ring-1 ring-slate-200" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+                  : <p className="m-0 rounded-xl bg-slate-50 p-4 text-sm text-slate-500 ring-1 ring-slate-100"><Icon name="geo-alt" /> Enter a physical location or a place to pin, and the map appears here.</p>}
+              </div>
+            )}
           </motion.div>
         </div>
         {tab === 'theme' && (

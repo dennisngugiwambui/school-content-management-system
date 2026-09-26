@@ -140,6 +140,23 @@ router.get('/news/:slug', (req, res) => {
   res.json({ item, related });
 });
 
+/* -------------------------------- Tenders -------------------------------- */
+
+const TENDER_COLUMNS = 'id, title, reference, category, description, file, file_name, file_size, opening_date, closing_date, status, awarded_to, created_at';
+
+router.get('/tenders', (req, res) => {
+  res.json(db.prepare(`SELECT ${TENDER_COLUMNS} FROM tenders WHERE is_published = 1 ORDER BY created_at DESC, id DESC`).all());
+});
+
+/** The tender document as a download named after the tender, e.g. "gfs-t-01-2026-supply-of-foodstuffs.pdf". */
+router.get('/tenders/:id/download', (req, res) => {
+  const t = db.prepare('SELECT id, title, reference, file FROM tenders WHERE id = ? AND is_published = 1').get(Number(req.params.id));
+  const file = t && localFile(t.file);
+  if (!file) throw new HttpError(404, 'Tender document not found.');
+  res.setHeader('Content-Disposition', attachment(niceName([t.reference, t.title].filter(Boolean).join(' '), file)));
+  res.sendFile(file);
+});
+
 /* ------------------------------- Downloads -------------------------------- */
 
 /** Downloads one site image as a file (only images stored on this site). */

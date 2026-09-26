@@ -29,7 +29,7 @@ export function localFile(url) {
 
 /** A safe, readable file name such as "sports-day-03.jpg". */
 export function niceName(label, file, index) {
-  const base = String(label || 'image').toLowerCase().normalize('NFKD').replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-').slice(0, 60) || 'image';
+  const base = String(label || 'image').toLowerCase().normalize('NFKD').replace(/[/\\]+/g, '-').replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-').slice(0, 60) || 'image';
   const num = index === undefined ? '' : `-${String(index + 1).padStart(2, '0')}`;
   return `${base}${num}${path.extname(file).toLowerCase() || '.jpg'}`;
 }

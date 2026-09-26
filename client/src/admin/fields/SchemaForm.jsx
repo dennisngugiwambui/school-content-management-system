@@ -4,6 +4,7 @@ import { FONT_OPTIONS } from '../../lib/color';
 import { cx } from '../../lib/utils';
 import { Icon } from '../../components/ui';
 import ImageField from './ImageField';
+import FileField from './FileField';
 import IconPicker from './IconPicker';
 
 /**
@@ -11,7 +12,7 @@ import IconPicker from './IconPicker';
  * A field: { key, label, type, col, help, placeholder, options, fields (group/list), itemLabel, newItem, showIf, rows }
  */
 export default function SchemaForm({ fields, value = {}, onChange, ctx = {} }) {
-  const set = (key, v) => onChange({ ...value, [key]: v });
+  const set = (key, v, extra) => onChange({ ...value, [key]: v, ...extra });
   return (
     <div className="row g-3">
       {fields.map((f, i) => {
@@ -26,7 +27,7 @@ export default function SchemaForm({ fields, value = {}, onChange, ctx = {} }) {
         }
         return (
           <div key={f.key} className={f.col || 'col-12'}>
-            <Field field={f} value={value[f.key]} onChange={(v) => set(f.key, v)} ctx={ctx} parent={value} />
+            <Field field={f} value={value[f.key]} onChange={(v, extra) => set(f.key, v, extra)} ctx={ctx} parent={value} />
           </div>
         );
       })}
@@ -108,6 +109,34 @@ export function Field({ field: f, value, onChange, ctx, parent }) {
             <ImageField key={k} value={src} onChange={(v) => onChange(v ? list.map((x, j) => (j === k ? v : x)) : list.filter((_, j) => j !== k))} aspect={f.aspect} noUrl />
           ))}
           <ImageField value="" onChange={(v) => v && onChange([...list, v])} aspect={f.aspect} noUrl />
+        </div>
+      );
+      break;
+    }
+    case 'file':
+      // Stores the URL in the field and the original name / size in sibling keys (f.nameKey, f.sizeKey).
+      control = (
+        <FileField value={value} name={parent?.[f.nameKey]} size={parent?.[f.sizeKey]}
+          onChange={(url, meta) => onChange(url, { ...(f.nameKey && { [f.nameKey]: meta.name }), ...(f.sizeKey && { [f.sizeKey]: meta.size }) })} />
+      );
+      break;
+    case 'counts': {
+      // A number per key, e.g. how many candidates got each grade. Keys come from f.keys (array or ctx => array).
+      const keys = (typeof f.keys === 'function' ? f.keys(ctx, parent) : f.keys) || [];
+      const counts = value && typeof value === 'object' ? value : {};
+      const total = keys.reduce((n, k) => n + (Number(counts[k]) || 0), 0);
+      control = (
+        <div>
+          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+            {keys.map((k) => (
+              <label key={k} className="rounded-lg bg-slate-50 ring-1 ring-slate-200 p-1.5 text-center">
+                <span className="block text-xs font-bold text-brand-700">{k}</span>
+                <input type="number" min="0" inputMode="numeric" className="form-control form-control-sm text-center !px-1" value={counts[k] ?? ''}
+                  onChange={(e) => onChange({ ...counts, [k]: e.target.value === '' ? '' : Math.max(0, Number(e.target.value)) })} />
+              </label>
+            ))}
+          </div>
+          {f.totalLabel && <p className="m-0 mt-2 text-xs text-slate-500">{f.totalLabel}: <strong>{total}</strong></p>}
         </div>
       );
       break;

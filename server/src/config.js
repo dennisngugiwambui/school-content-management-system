@@ -15,3 +15,5 @@ export const CORS_ORIGIN = process.env.CORS_ORIGIN || '';
 export const SESSION_IDLE_MINUTES = Number(process.env.SESSION_IDLE_MINUTES) || 30;
 export const SESSION_MAX_HOURS = Number(process.env.SESSION_MAX_HOURS) || 12;
 export const MAX_UPLOAD_MB = Number(process.env.MAX_UPLOAD_MB) || 10;
+/** Tender documents and other PDFs can be larger than photos. */
+export const MAX_DOCUMENT_MB = Number(process.env.MAX_DOCUMENT_MB) || 25;

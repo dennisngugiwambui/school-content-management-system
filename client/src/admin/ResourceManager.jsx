@@ -74,6 +74,19 @@ export default function ResourceManager({ config }) {
     }
   };
 
+  /** Quick change from the list (e.g. mark a tender awarded) without opening the editor. */
+  const quick = async (row, patch, message) => {
+    setRows((rs) => rs.map((r) => (r.id === row.id ? { ...r, ...patch } : r)));
+    try {
+      await api.put(`${endpoint}/${row.id}`, patch);
+      if (message) toast.success(message);
+      if (config.reloadSite) site.reload();
+    } catch (e) {
+      toast.error(e.message);
+      load();
+    }
+  };
+
   const toggle = async (row, key) => {
     const next = row[key] ? 0 : 1;
     setRows((rs) => rs.map((r) => (r.id === row.id ? { ...r, [key]: next } : r)));
@@ -169,6 +182,12 @@ export default function ResourceManager({ config }) {
                       </span>
                     )}
                     <div className="flex shrink-0">
+                      {config.actions?.(row).filter(Boolean).map((a) => (
+                        <button key={a.label} onClick={() => quick(row, a.patch, a.done)} title={a.label} aria-label={a.label}
+                          className={cx('grid place-items-center h-9 w-9 rounded-lg transition', a.active ? 'text-accent-600 bg-accent-50 hover:bg-accent-100' : 'text-slate-400 hover:bg-brand-50 hover:text-brand-700')}>
+                          <Icon name={a.icon} />
+                        </button>
+                      ))}
                       <button onClick={() => setEditing({ ...row })} className="hidden sm:grid place-items-center h-9 w-9 rounded-lg text-slate-500 hover:bg-brand-50 hover:text-brand-700" aria-label="Edit"><Icon name="pencil-square" /></button>
                       <button onClick={() => setConfirm(row)} className="grid place-items-center h-9 w-9 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600" aria-label="Delete"><Icon name="trash" /></button>
                     </div>

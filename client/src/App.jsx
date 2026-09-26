@@ -14,6 +14,7 @@ import Prefects from './pages/Prefects';
 import Gallery from './pages/Gallery';
 import Results from './pages/Results';
 import Fees from './pages/Fees';
+import Tenders from './pages/Tenders';
 import { NewsList, NewsDetail } from './pages/News';
 import Portal from './pages/Portal';
 import NotFound from './pages/NotFound';
@@ -93,6 +94,7 @@ export default function App() {
           <Route path="staff" element={<ResourcePage kind="staff" />} />
           <Route path="prefects" element={<ResourcePage kind="prefects" />} />
           <Route path="news" element={<ResourcePage kind="news" />} />
+          <Route path="tenders" element={<ResourcePage kind="tenders" />} />
           <Route path="gallery" element={<GalleryAdmin />} />
           <Route path="account" element={<Account />} />
           <Route path="*" element={<Navigate to="/admin" replace />} />
@@ -108,6 +110,7 @@ export default function App() {
           <Route path="gallery" element={<Gallery />} />
           <Route path="results" element={<Results />} />
           <Route path="fees" element={<Fees />} />
+          <Route path="tenders" element={<Tenders />} />
           <Route path="news" element={<NewsList />} />
           <Route path="news/:slug" element={<NewsDetail />} />
           <Route path="*" element={<NotFound />} />

@@ -45,7 +45,20 @@ export function buildNav(page, departments = [], fill = (s) => s) {
     shown('gallery') && { key: 'gallery', to: '/gallery', label: label('gallery', 'Gallery') },
     shown('results') && { key: 'results', to: '/results', label: label('results', 'Results') },
     shown('news') && { key: 'news', to: '/news', label: label('news', 'News & Events') },
-    shown('fees') && { key: 'fees', to: '/fees', label: label('fees', 'Fees') },
+    // Fees and tenders share a "Downloads" menu so the bar stays on one line; alone, each is a plain link.
+    shown('fees') && shown('tenders')
+      ? {
+        key: 'downloads',
+        to: '/fees',
+        label: 'Downloads',
+        match: ['/fees', '/tenders'],
+        children: [
+          { to: '/fees', label: label('fees', 'Fee Structure'), icon: 'cash-coin' },
+          { to: '/tenders', label: label('tenders', 'Tenders'), icon: 'file-earmark-text' },
+        ],
+      }
+      : shown('fees') ? { key: 'fees', to: '/fees', label: label('fees', 'Fees') }
+        : shown('tenders') && { key: 'tenders', to: '/tenders', label: label('tenders', 'Tenders') },
   ].filter(Boolean);
 
   return { items, portal: !STATIC && shown('portal') ? { to: '/portal', label: label('portal', 'Portal') } : null };

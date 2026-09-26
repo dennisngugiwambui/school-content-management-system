@@ -28,9 +28,11 @@ export const DEFAULT_SETTINGS = {
     phone: '+254 700 000 000',
     phone2: '',
     email: 'info@greenfield.co.ke',
+    email2: '',
     address: 'P.O. Box 1998 – 00100, Nairobi',
     location: 'Greenfield Road, Nairobi, Kenya',
     hours: 'Mon – Fri: 7:30 AM – 5:00 PM',
+    mapLocation: '',
     mapEmbed: '',
   },
   social: {
@@ -182,6 +184,40 @@ export const DEFAULT_CONTENT = {
     },
   },
 
+  promo: {
+    popup: {
+      enabled: true,
+      badge: 'Admissions Open',
+      title: 'Form One Admissions {nextYear} Now Open',
+      text: 'Give your child a head start at {school}. Places are limited. Apply early to secure a slot.',
+      image: img('students-uniform'),
+      buttonText: 'Apply now',
+      buttonLink: '/about#contact',
+      button2Text: 'View fee structure',
+      button2Link: '/fees',
+      startDate: '',
+      endDate: '',
+      delay: 3,
+      frequency: 'session',
+      where: 'home',
+    },
+    banner: {
+      enabled: true,
+      badge: 'Admissions {nextYear}',
+      title: 'Join the {school} family',
+      text: 'Admissions for the new academic year are open. Visit the school office or call us to reserve a place.',
+      image: img('school-community'),
+      buttonText: 'Contact admissions',
+      buttonLink: '/about#contact',
+      button2Text: '',
+      button2Link: '',
+      deadline: '',
+      deadlineLabel: 'Applications close in',
+      startDate: '',
+      endDate: '',
+    },
+  },
+
   about: {
     intro: {
       eyebrow: 'Who We Are',
@@ -248,6 +284,7 @@ export const DEFAULT_CONTENT = {
     intro: {
       enabled: true,
       examName: 'KCSE',
+      gradeScale: 'A, A-, B+, B, B-, C+, C, C-, D+, D, D-, E',
       eyebrow: 'Academic Results',
       title: 'Our {exam} Performance',
       subtitle: 'Consistent effort, dedicated teachers and personal mentoring reflected in our national examination results.',
@@ -257,6 +294,7 @@ export const DEFAULT_CONTENT = {
         {
           year: '2025', candidates: 298, meanScore: '8.12', meanGrade: 'B-', countyPosition: '4', subCountyPosition: '1', nationalPosition: '',
           county: 'Nairobi County', universityQualifiers: 214,
+          grades: { A: 6, 'A-': 28, 'B+': 52, B: 61, 'B-': 45, 'C+': 22, C: 38, 'C-': 24, 'D+': 13, D: 7, 'D-': 2, E: 0 },
           note: 'Our best results to date, with 214 candidates attaining the minimum university entry grade.',
           topStudents: [
             { name: 'Faith Wanjiru', grade: 'A', points: '84', note: 'Top candidate in the county' },
@@ -267,6 +305,7 @@ export const DEFAULT_CONTENT = {
         {
           year: '2024', candidates: 276, meanScore: '7.64', meanGrade: 'B-', countyPosition: '6', subCountyPosition: '2', nationalPosition: '',
           county: 'Nairobi County', universityQualifiers: 181, note: '',
+          grades: { A: 3, 'A-': 19, 'B+': 41, B: 50, 'B-': 45, 'C+': 23, C: 40, 'C-': 29, 'D+': 16, D: 8, 'D-': 2, E: 0 },
           topStudents: [
             { name: 'Brian Kiprono', grade: 'A', points: '81', note: '' },
             { name: 'Joy Achieng', grade: 'A-', points: '78', note: '' },
@@ -301,6 +340,14 @@ export const DEFAULT_CONTENT = {
     news: { label: 'News & Events', showInNav: true, title: 'News & Events', subtitle: 'Stay informed about what is happening at {school}.', image: img('library') },
     results: { label: 'Results', showInNav: true, title: '{exam} Results', subtitle: 'Our national examination performance over the years.', image: img('students-front-row') },
     fees: { label: 'Fees', showInNav: true, title: 'Fee Structure', subtitle: 'Current fee structures for every class, with payment details.', image: img('school-building-wide') },
+    tenders: {
+      label: 'Tenders',
+      showInNav: true,
+      title: 'Tenders & Procurement',
+      subtitle: 'Current tender opportunities at {school}. View or download the tender documents.',
+      image: img('school-building'),
+      note: 'Completed tender documents should be sealed, clearly marked with the tender number, and delivered to the school office before the closing date.',
+    },
     portal: {
       label: 'Portal',
       showInNav: true,

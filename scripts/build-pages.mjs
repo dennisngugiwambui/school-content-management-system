@@ -89,7 +89,7 @@ try {
   step('Exporting content');
   const site = await save('/public/site');
   if (!site?.installed) throw new Error('The school has not been set up yet. Run the site once and finish the setup wizard.');
-  for (const p of ['/public/home', '/public/gallery', '/public/staff', '/public/prefects', '/public/news?category=news', '/public/news?category=event']) await save(p);
+  for (const p of ['/public/home', '/public/gallery', '/public/staff', '/public/prefects', '/public/news?category=news', '/public/news?category=event', '/public/tenders']) await save(p);
   const departments = (await save('/public/departments')) ?? [];
   for (const d of departments) await save(`/public/departments/${d.slug}`);
   const news = (await save('/public/news')) ?? [];

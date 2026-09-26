@@ -155,3 +155,48 @@ export const USERS = {
     { key: 'password', type: 'password', label: 'Password', help: 'At least 8 characters. When editing, leave blank to keep the current password.' },
   ],
 };
+
+const TENDER_STATUS = [
+  { value: 'open', label: 'Open (accepting bids)' },
+  { value: 'closed', label: 'Closed' },
+  { value: 'awarded', label: 'Awarded' },
+  { value: 'cancelled', label: 'Cancelled' },
+];
+const statusLabel = (v) => TENDER_STATUS.find((s) => s.value === v)?.label.replace(/ \(.*/, '') ?? v;
+const today = () => new Date().toISOString().slice(0, 10);
+
+export const TENDERS = {
+  resource: 'tenders',
+  title: 'Tenders',
+  singular: 'Tender',
+  icon: 'file-earmark-text',
+  description: 'Publish tender notices with their documents (PDF). Visitors can only view and download them. Hide a tender with the switch, mark it awarded with the award button, or delete it.',
+  titleKey: 'title',
+  activeKey: 'is_published',
+  searchKeys: ['title', 'reference', 'category'],
+  subtitle: (r) => [r.reference, r.closing_date && `Closes ${r.closing_date}`, r.status === 'awarded' && r.awarded_to && `Awarded to ${r.awarded_to}`].filter(Boolean).join(' · ') || 'No closing date',
+  badges: (r) => [
+    { label: statusLabel(r.status === 'open' && r.closing_date && r.closing_date < today() ? 'closed' : r.status), tone: r.status === 'awarded' ? 'accent' : r.status === 'open' ? undefined : 'muted' },
+    !r.file && { label: 'No document', tone: 'muted' },
+  ],
+  actions: (r) => [
+    r.status === 'awarded'
+      ? { icon: 'award-fill', label: 'Awarded (click to reopen)', active: true, patch: { status: 'open' }, done: 'Tender reopened' }
+      : { icon: 'award', label: 'Mark as awarded', patch: { status: 'awarded' }, done: 'Tender marked as awarded' },
+  ],
+  filters: [{ key: 'status', label: 'Status', options: () => TENDER_STATUS.map((s) => ({ value: s.value, label: statusLabel(s.value) })) }],
+  defaults: () => ({ status: 'open', is_published: 1, opening_date: today() }),
+  deleteNote: 'Its document will no longer be available on the website.',
+  fields: [
+    { key: 'title', label: 'Tender title', required: true, col: 'col-md-8', placeholder: 'e.g. Supply and delivery of foodstuffs' },
+    { key: 'reference', label: 'Tender number', col: 'col-md-4', placeholder: 'e.g. GFS/T/01/2026' },
+    { key: 'file', type: 'file', label: 'Tender document', nameKey: 'file_name', sizeKey: 'file_size', help: 'Visitors can open it in the browser or download it.' },
+    { key: 'category', label: 'Category (optional)', col: 'col-md-4', placeholder: 'Supplies, Works, Services' },
+    { key: 'opening_date', type: 'date', label: 'Advertised on', col: 'col-md-4' },
+    { key: 'closing_date', type: 'date', label: 'Closing date', col: 'col-md-4', help: 'After this date an open tender shows as closed.' },
+    { key: 'description', label: 'Short description (optional)', type: 'textarea', rows: 3 },
+    { key: 'status', type: 'select', label: 'Status', col: 'col-md-4', empty: false, options: TENDER_STATUS },
+    { key: 'awarded_to', label: 'Awarded to (optional)', col: 'col-md-8', showIf: (v) => v.status === 'awarded' },
+    { key: 'is_published', type: 'switch', label: 'Visible on website (turn off to hide)', col: 'col-12' },
+  ],
+};

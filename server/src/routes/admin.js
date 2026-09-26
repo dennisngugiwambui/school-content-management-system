@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { db, tx, getSettings, getContent, setKV } from '../db.js';
 import { DEFAULT_SETTINGS, DEFAULT_CONTENT } from '../defaults.js';
 import { requireAuth, requireRole, publicUser, endUserSessions } from '../lib/auth.js';
-import { upload, fileUrl } from '../lib/upload.js';
+import { upload, uploadDocument, verifyDocument, fileUrl } from '../lib/upload.js';
 import { HttpError, isEmail, isPlainObject } from '../lib/utils.js';
 import { RESOURCES, sanitize, listResource, getRow, insertRow, updateRow } from '../resources.js';
 
@@ -23,6 +23,7 @@ router.get('/stats', (req, res) => {
     albums: count('SELECT COUNT(*) AS n FROM albums'),
     images: count('SELECT COUNT(*) AS n FROM images'),
     news: count('SELECT COUNT(*) AS n FROM news'),
+    tenders: count('SELECT COUNT(*) AS n FROM tenders'),
     users: count('SELECT COUNT(*) AS n FROM users'),
     recentNews: db.prepare('SELECT id, title, category, created_at, is_published FROM news ORDER BY created_at DESC LIMIT 5').all(),
     lastUpdated: db.prepare('SELECT key, updated_at FROM kv WHERE key NOT LIKE ? ORDER BY updated_at DESC LIMIT 1').get('secret:%') ?? null,
@@ -70,6 +71,13 @@ router.put('/content/:key', (req, res) => {
 router.post('/upload', upload.array('files', 40), (req, res) => {
   if (!req.files?.length) throw new HttpError(400, 'No file received.');
   res.status(201).json({ files: req.files.map((f) => ({ url: fileUrl(f), name: f.originalname, size: f.size })) });
+});
+
+/** One document (tender PDF, form…); its contents are checked against the file type. */
+router.post('/upload-document', uploadDocument.single('file'), (req, res) => {
+  if (!req.file) throw new HttpError(400, 'No file received.');
+  verifyDocument(req.file);
+  res.status(201).json({ url: fileUrl(req.file), name: req.file.originalname, size: req.file.size });
 });
 
 /* -------------------------------- Users -------------------------------- */

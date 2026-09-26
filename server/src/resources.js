@@ -5,6 +5,8 @@ import { HttpError, slugify } from './lib/utils.js';
  * CMS resource definitions. Each entry whitelists the editable columns and how
  * they are coerced, so the generic admin CRUD router can never write anything else.
  */
+export const TENDER_STATUSES = ['open', 'closed', 'awarded', 'cancelled'];
+
 export const RESOURCES = {
   departments: {
     table: 'departments',
@@ -77,6 +79,20 @@ export const RESOURCES = {
     required: ['title'],
     slugFrom: 'title',
     order: 'created_at DESC, id DESC',
+  },
+  tenders: {
+    table: 'tenders',
+    fields: {
+      title: 'string', reference: 'string', category: 'string', description: 'string', file: 'string', file_name: 'string',
+      file_size: 'int', opening_date: 'string', closing_date: 'string', status: 'string', awarded_to: 'string',
+      is_published: 'bool', sort_order: 'int',
+    },
+    required: ['title'],
+    order: 'created_at DESC, id DESC',
+    validate(data) {
+      if (data.status !== undefined && !TENDER_STATUSES.includes(data.status)) throw new HttpError(400, 'Invalid tender status.');
+      if (data.file && !/^\/uploads\/[\w/.-]+$/.test(data.file) && !/^https?:\/\//.test(data.file)) throw new HttpError(400, 'Invalid tender document.');
+    },
   },
 };
 
