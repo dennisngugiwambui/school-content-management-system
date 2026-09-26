@@ -53,6 +53,9 @@ export function StaffModal({ person, onHide }) {
                   <Icon name="building" />{person.department_name}
                 </Link>
               )}
+              {person.reports_to && (
+                <p className="mt-3 mb-0 flex items-center gap-2 text-sm text-slate-600"><Icon name="diagram-3" className="text-brand-600" />Reports to <strong className="text-slate-800">{person.reports_to}</strong></p>
+              )}
               {person.qualifications && (
                 <p className="mt-4 mb-0 flex items-start gap-2 text-sm text-slate-600"><Icon name="mortarboard-fill" className="text-accent-500 mt-0.5" />{person.qualifications}</p>
               )}

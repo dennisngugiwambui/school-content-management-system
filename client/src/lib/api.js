@@ -41,7 +41,7 @@ export function downloadUrl(url, name = '') {
 export const tenderDownloadUrl = (t) => (STATIC ? asset(t.file) : `${BASE}/api/public/tenders/${t.id}/download`);
 
 /** Link to a ZIP of several photos (an album or the fee structures). */
-export const zipUrl = (path) => (STATIC ? `${PUBLIC_BASE}data/${staticName(path)}.zip` : `${BASE}/api/public${path}`);
+export const zipUrl = (path) => (STATIC ? `${PUBLIC_BASE}data/${staticName(`/public${path}`)}.zip` : `${BASE}/api/public${path}`);
 
 async function staticRequest(method, path) {
   if (method !== 'GET' || !path.startsWith('/public/')) {

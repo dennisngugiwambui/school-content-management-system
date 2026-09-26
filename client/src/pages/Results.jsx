@@ -15,35 +15,123 @@ const has = (v) => v !== '' && v !== undefined && v !== null;
 const pct = (n, total) => (total ? (n / total) * 100 : 0);
 const fmtPct = (p, n) => (n && p < 1 ? '<1%' : `${p >= 10 || !p ? Math.round(p) : p.toFixed(1)}%`);
 
-/** The year's key figures in one bordered strip, divided like a table row (2 → 4 → all columns as space allows). */
-function SummaryStrip({ y, light = false }) {
-  const uni = Number(y.universityQualifiers);
-  const cand = Number(y.candidates);
-  const items = [
-    has(y.meanScore) && { label: 'Mean score', value: y.meanScore, unit: `/ ${scoreMax(y.meanScore)}` },
-    has(y.meanGrade) && { label: 'Mean grade', value: y.meanGrade, strong: true },
-    has(y.candidates) && { label: 'Candidates', value: cand.toLocaleString() },
-    has(y.universityQualifiers) && { label: 'University entry', value: uni.toLocaleString(), sub: cand ? `${Math.round(pct(uni, cand))}% of candidates` : '' },
-    has(y.countyPosition) && { label: y.county ? `Position in ${y.county}` : 'County position', value: ordinal(y.countyPosition) },
-    has(y.subCountyPosition) && { label: 'Sub-county position', value: ordinal(y.subCountyPosition) },
-    has(y.nationalPosition) && { label: 'National position', value: ordinal(y.nationalPosition) },
-  ].filter(Boolean);
-  if (!items.length) return null;
-  // The home band sits in a narrower column, so it stays at three per row there.
-  const cols = light ? '' : items.length >= 6 ? 'lg:grid-cols-6' : items.length === 5 ? 'lg:grid-cols-5' : items.length === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3';
+/** Change against the previous year, green when better. For positions a smaller number is better. */
+function Delta({ now, before, lowerIsBetter = false, unit = '', prevYear, decimals = 0 }) {
+  if (!has(now) || !has(before) || Number.isNaN(Number(now)) || Number.isNaN(Number(before))) return null;
+  const diff = Number(now) - Number(before);
+  const better = lowerIsBetter ? diff < 0 : diff > 0;
+  const same = diff === 0;
+  const size = Math.abs(diff).toFixed(decimals);
   return (
-    <dl className={cx('m-0 grid grid-cols-2 sm:grid-cols-3 gap-px overflow-hidden rounded-theme-lg ring-1', cols, light ? 'bg-white/15 ring-white/15' : 'bg-slate-200 ring-slate-200 shadow-sm')}>
-      {items.map((it, k) => (
-        <div key={it.label} className={cx('px-4 py-3.5 sm:px-5 sm:py-4', light ? 'bg-ink-950/40 backdrop-blur-sm' : 'bg-white', items.length % 2 === 1 && k === items.length - 1 && 'col-span-2 sm:col-span-1')}>
-          <dt className={cx('text-[0.65rem] sm:text-[0.7rem] font-semibold uppercase tracking-wider leading-tight', light ? 'text-white/60' : 'text-slate-500')}>{it.label}</dt>
-          <dd className="m-0 mt-1.5 flex items-baseline gap-1">
-            <span className={cx('font-heading text-2xl sm:text-[1.7rem] font-extrabold leading-none tabular-nums', it.strong ? (light ? 'text-accent-300' : 'text-brand-700') : light ? 'text-white' : 'text-slate-900')}>{it.value}</span>
-            {it.unit && <span className={cx('text-xs font-semibold', light ? 'text-white/50' : 'text-slate-400')}>{it.unit}</span>}
-          </dd>
-          {it.sub && <p className={cx('m-0 mt-1 text-[0.7rem] font-medium', light ? 'text-accent-300' : 'text-brand-700')}>{it.sub}</p>}
+    <span className={cx('inline-flex items-center gap-1 text-[0.7rem] font-semibold', same ? 'text-slate-400' : better ? 'text-emerald-600' : 'text-red-500')}>
+      <Icon name={same ? 'dash' : better ? 'arrow-up-right' : 'arrow-down-right'} />
+      {same ? `Same as ${prevYear}` : `${lowerIsBetter ? `${size} place${size === '1' ? '' : 's'}` : `${size}${unit}`} ${better ? 'up' : 'down'} on ${prevYear}`}
+    </span>
+  );
+}
+
+/**
+ * The year's results as a report card: the mean score and grade on a highlighted panel,
+ * the other figures as tiles with the change since the previous year.
+ */
+function ResultSummary({ y, prev, exam }) {
+  const max = scoreMax(y.meanScore);
+  const cand = Number(y.candidates);
+  const uni = Number(y.universityQualifiers);
+  const py = prev?.year;
+  const tiles = [
+    has(y.candidates) && {
+      icon: 'people-fill', label: 'Candidates', value: cand.toLocaleString(),
+      foot: <Delta now={y.candidates} before={prev?.candidates} prevYear={py} />,
+    },
+    has(y.universityQualifiers) && {
+      icon: 'mortarboard-fill', label: 'University entry', value: uni.toLocaleString(),
+      bar: cand ? pct(uni, cand) : null, barLabel: cand ? `${Math.round(pct(uni, cand))}% of candidates` : '',
+    },
+    has(y.countyPosition) && {
+      icon: 'geo-alt-fill', label: y.county ? `Position in ${y.county}` : 'County position', value: ordinal(y.countyPosition),
+      foot: <Delta now={y.countyPosition} before={prev?.countyPosition} lowerIsBetter prevYear={py} />,
+    },
+    has(y.subCountyPosition) && {
+      icon: 'pin-map-fill', label: 'Sub-county position', value: ordinal(y.subCountyPosition),
+      foot: <Delta now={y.subCountyPosition} before={prev?.subCountyPosition} lowerIsBetter prevYear={py} />,
+    },
+    has(y.nationalPosition) && {
+      icon: 'flag-fill', label: 'National position', value: ordinal(y.nationalPosition),
+      foot: <Delta now={y.nationalPosition} before={prev?.nationalPosition} lowerIsBetter prevYear={py} />,
+    },
+  ].filter(Boolean);
+  const headline = has(y.meanScore) || has(y.meanGrade);
+  if (!headline && !tiles.length) return null;
+
+  return (
+    <div className={cx('overflow-hidden rounded-theme-lg bg-white shadow-soft ring-1 ring-slate-200', headline && tiles.length && 'md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]')}>
+      {headline && (
+        <div className="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-ink-950 p-5 text-white sm:p-7">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/5" />
+          <div className="pointer-events-none absolute -bottom-16 right-10 h-40 w-40 rounded-full bg-accent-400/10" />
+          <div className="relative flex items-start justify-between gap-4">
+            <div>
+              <p className="m-0 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-white/60">{exam} {y.year}</p>
+              <p className="m-0 mt-1 text-sm font-medium text-white/85">Mean score</p>
+            </div>
+            {has(y.meanGrade) && (
+              <div className="text-center">
+                <span className="grid h-14 w-14 place-items-center rounded-2xl bg-accent-400 font-heading text-2xl font-extrabold text-ink-900 shadow-lg">{y.meanGrade}</span>
+                <span className="mt-1 block text-[0.6rem] font-semibold uppercase tracking-wider text-white/60">Mean grade</span>
+              </div>
+            )}
+          </div>
+          {has(y.meanScore) && (
+            <>
+              <p className="relative m-0 mt-3 font-heading text-5xl sm:text-6xl font-extrabold leading-none tabular-nums">
+                {y.meanScore}<span className="ml-1.5 text-lg font-semibold text-white/50">/ {max}</span>
+              </p>
+              <div className="relative mt-5 h-2 overflow-hidden rounded-full bg-white/15">
+                <motion.span
+                  className="absolute inset-y-0 left-0 rounded-full bg-accent-400"
+                  initial={{ width: 0 }} whileInView={{ width: `${Math.min(100, (Number(y.meanScore) / max) * 100)}%` }} viewport={{ once: true }} transition={{ duration: 1.1, ease: 'easeOut' }}
+                />
+              </div>
+              {has(prev?.meanScore) && (
+                <p className="relative m-0 mt-3 text-xs text-white/70">
+                  {(() => {
+                    const d = Number(y.meanScore) - Number(prev.meanScore);
+                    if (!d) return `Same mean as ${py}`;
+                    return (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 font-semibold text-white ring-1 ring-white/15">
+                        <Icon name={d > 0 ? 'graph-up-arrow' : 'graph-down-arrow'} className={d > 0 ? 'text-accent-300' : 'text-red-300'} />
+                        {d > 0 ? '+' : '−'}{Math.abs(d).toFixed(2)} on {py} ({prev.meanScore})
+                      </span>
+                    );
+                  })()}
+                </p>
+              )}
+            </>
+          )}
         </div>
-      ))}
-    </dl>
+      )}
+      {tiles.length > 0 && (
+        <dl className="m-0 grid grid-cols-2 gap-px bg-slate-100">
+          {tiles.map((t, k) => (
+            <div key={t.label} className={cx('flex flex-col bg-white p-4 sm:p-5', tiles.length % 2 === 1 && k === tiles.length - 1 && 'col-span-2')}>
+              <dt className="flex items-center gap-2 text-[0.68rem] sm:text-[0.72rem] font-semibold uppercase tracking-wide leading-tight text-slate-500">
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-brand-50 text-[0.8rem] text-brand-700"><Icon name={t.icon} /></span>
+                {t.label}
+              </dt>
+              <dd className="m-0 mt-2.5 font-heading text-2xl sm:text-[1.75rem] font-extrabold leading-none tabular-nums text-slate-900">{t.value}</dd>
+              {t.bar != null && (
+                <div className="mt-2.5">
+                  <div className="h-1.5 overflow-hidden rounded-full bg-slate-100"><span className="block h-full rounded-full bg-brand-600" style={{ width: `${Math.min(100, t.bar)}%` }} /></div>
+                  <p className="m-0 mt-1 text-[0.7rem] font-semibold text-brand-700">{t.barLabel}</p>
+                </div>
+              )}
+              {t.foot && <div className="mt-1.5">{t.foot}</div>}
+            </div>
+          ))}
+        </dl>
+      )}
+    </div>
   );
 }
 
@@ -238,7 +326,7 @@ export function ResultsHighlight() {
               <h2 className="mt-3 text-[1.7rem] sm:text-3xl md:text-4xl font-extrabold !text-white leading-tight">{fill(r.intro.title)} {y.year}</h2>
               {(y.note || r.intro.subtitle) && <p className="mt-3 mb-6 text-white/75 max-w-2xl">{fill(y.note || r.intro.subtitle)}</p>}
             </Reveal>
-            <Reveal delay={0.1}><SummaryStrip y={y} light /></Reveal>
+            <Reveal delay={0.1}><ResultSummary y={y} prev={r.years.items[1]} exam={exam} /></Reveal>
             <Reveal delay={0.2} className="mt-6"><Link to="/results" className="btn-accent">Full results &amp; grade analysis <Icon name="arrow-right" /></Link></Reveal>
           </div>
           {hasTop && (
@@ -320,7 +408,7 @@ export default function Results() {
                   <div>
                     <h2 className="m-0 text-2xl md:text-3xl font-extrabold">{exam} {y.year} summary</h2>
                     {y.note && <p className="m-0 mt-1.5 text-slate-500">{fill(y.note)}</p>}
-                    <div className="mt-5"><SummaryStrip y={y} /></div>
+                    <div className="mt-5"><ResultSummary y={y} prev={years[sel + 1]} exam={exam} /></div>
                   </div>
 
                   {breakdown && (

@@ -54,7 +54,7 @@ export const DEFAULT_SETTINGS = {
     placeholder: 'Type your message…',
   },
   topbar: {
-    style: 'light',
+    style: 'brand',
     enabled: true,
     label: 'News',
     announcement: 'Admissions for the new academic year are now open. Visit the school office for details.',

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useSite } from '../context/SiteContext';
@@ -67,11 +68,12 @@ export function PromoPopup() {
 
   const close = () => { setOpen(false); markSeen(p); };
 
-  return (
+  // Portal to <body> and size to the visible screen (dvh) so it is always centred, even under mobile browser bars.
+  return createPortal(
     <AnimatePresence>
       {open && eligible && (
         <motion.div
-          key="promo" className="fixed inset-0 z-[1060] grid place-items-center p-5"
+          key="promo" className="fixed inset-x-0 top-0 z-[1060] flex h-[100dvh] items-center justify-center p-6"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           role="dialog" aria-modal="true" aria-labelledby="promo-title"
         >
@@ -80,7 +82,7 @@ export function PromoPopup() {
             initial={{ opacity: 0, y: 24, scale: 0.94 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ type: 'spring', stiffness: 300, damping: 28 }}
             onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onTouchStart={() => setPaused(true)}
-            className="relative w-full max-w-[22rem] sm:max-w-sm overflow-hidden rounded-theme-lg bg-white text-center shadow-2xl ring-1 ring-black/5"
+            className="relative max-h-full w-full max-w-[18.5rem] sm:max-w-[21rem] overflow-y-auto overflow-x-hidden rounded-theme-lg bg-white text-center shadow-2xl ring-1 ring-black/5"
           >
             {life > 0 && (
               <span
@@ -89,36 +91,37 @@ export function PromoPopup() {
                 onAnimationEnd={close}
               />
             )}
-            <button type="button" onClick={close} className="absolute right-2.5 top-2.5 z-10 grid place-items-center h-8 w-8 rounded-full bg-black/35 text-white backdrop-blur hover:bg-black/55" aria-label="Close">
-              <Icon name="x-lg" className="text-sm" />
+            <button type="button" onClick={close} className="absolute right-2 top-2 z-10 grid place-items-center h-7 w-7 rounded-full bg-black/35 text-white backdrop-blur hover:bg-black/55" aria-label="Close">
+              <Icon name="x-lg" className="text-xs" />
             </button>
             {p.image ? (
-              <div className="relative h-32 sm:h-36">
+              <div className="relative h-24 sm:h-32">
                 <SmartImage src={p.image} alt="" className="h-full w-full" imgClassName="object-[50%_22%]" />
                 <span className="absolute inset-0 bg-gradient-to-t from-brand-900/70 via-brand-900/10 to-transparent" />
-                {p.badge && <Badge text={fill(p.badge)} className="absolute bottom-3 left-1/2 -translate-x-1/2" />}
+                {p.badge && <Badge text={fill(p.badge)} className="absolute bottom-2.5 left-1/2 -translate-x-1/2" />}
               </div>
             ) : (
-              <div className="bg-gradient-to-br from-brand-600 to-brand-800 px-5 pt-6 pb-5">
-                <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white/15 text-2xl text-white"><Icon name="megaphone-fill" /></span>
+              <div className="bg-gradient-to-br from-brand-600 to-brand-800 px-5 pt-5 pb-4">
+                <span className="mx-auto grid h-10 w-10 place-items-center rounded-xl bg-white/15 text-xl text-white"><Icon name="megaphone-fill" /></span>
                 {p.badge && <Badge text={fill(p.badge)} className="mt-3" />}
               </div>
             )}
-            <div className="px-5 pb-5 pt-4 sm:px-6">
-              <h2 id="promo-title" className="m-0 text-lg sm:text-xl font-extrabold leading-snug">{fill(p.title)}</h2>
-              {p.text && <p className="m-0 mt-2 text-sm leading-relaxed text-slate-600 line-clamp-4">{fill(p.text)}</p>}
+            <div className="px-4 pb-4 pt-3.5 sm:px-5 sm:pb-5">
+              <h2 id="promo-title" className="m-0 text-base sm:text-lg font-extrabold leading-snug">{fill(p.title)}</h2>
+              {p.text && <p className="m-0 mt-1.5 text-[0.8rem] sm:text-sm leading-relaxed text-slate-600 line-clamp-3">{fill(p.text)}</p>}
               {(p.buttonText || p.button2Text) && (
-                <div className="mt-4 grid gap-2">
-                  {p.buttonText && <SmartLink to={p.buttonLink} onClick={close} className="btn-brand w-full !py-2.5 text-sm">{fill(p.buttonText)}<Icon name="arrow-right" /></SmartLink>}
-                  {p.button2Text && <SmartLink to={p.button2Link} onClick={close} className="btn-outline-brand w-full !py-2 text-sm">{fill(p.button2Text)}</SmartLink>}
+                <div className="mt-3.5 grid gap-2">
+                  {p.buttonText && <SmartLink to={p.buttonLink} onClick={close} className="btn-brand w-full !py-2 text-[0.82rem]">{fill(p.buttonText)}<Icon name="arrow-right" /></SmartLink>}
+                  {p.button2Text && <SmartLink to={p.button2Link} onClick={close} className="btn-outline-brand w-full !py-1.5 text-[0.82rem]">{fill(p.button2Text)}</SmartLink>}
                 </div>
               )}
-              <button type="button" onClick={close} className="mt-3 text-xs font-medium text-slate-400 hover:text-slate-600">Maybe later</button>
+              <button type="button" onClick={close} className="mt-2.5 text-xs font-medium text-slate-400 hover:text-slate-600">Maybe later</button>
             </div>
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }
 

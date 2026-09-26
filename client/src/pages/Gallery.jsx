@@ -65,11 +65,12 @@ export default function Gallery() {
             </>
           )}
 
-          {loading && <div className="columns-2 md:columns-3 lg:columns-4 gap-4">{Array.from({ length: 8 }).map((_, i) => <div key={i} className={cx('skeleton mb-4 break-inside-avoid', i % 3 ? 'h-52' : 'h-72')} />)}</div>}
+          {loading && <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">{Array.from({ length: 8 }).map((_, i) => <div key={i} className="skeleton aspect-[4/3]" />)}</div>}
           {(albums.error || photos.error) && <ErrorState error={albums.error || photos.error} onRetry={() => { albums.reload(); photos.reload(); }} />}
           {!loading && !visible.length && !photos.error && <EmptyState icon="images" title="No photos yet" text="Photos uploaded in the CMS will appear here." />}
 
-          <motion.div layout className="columns-2 md:columns-3 lg:columns-4 gap-3 md:gap-4">
+          {/* Every photo gets the same 4:3 tile, cropped to fit, so the grid stays in neat rows. */}
+          <motion.div layout className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
             <AnimatePresence mode="popLayout">
               {visible.map((p, k) => (
                 <motion.button
@@ -81,12 +82,12 @@ export default function Gallery() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.85 }}
                   transition={{ duration: 0.4, delay: Math.min(k * 0.03, 0.4) }}
-                  className="group relative mb-3 md:mb-4 block w-full overflow-hidden rounded-2xl break-inside-avoid shadow-sm"
+                  className="group relative block aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-50 shadow-sm"
                 >
-                  <img src={asset(p.url)} alt={p.caption || ''} loading="lazy" className="w-full h-auto block transition-transform duration-700 group-hover:scale-110 bg-brand-50" />
+                  <img src={asset(p.url)} alt={p.caption || ''} loading="lazy" className="absolute inset-0 block h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
                   <span className="absolute inset-0 bg-gradient-to-t from-brand-900/85 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <span className="absolute right-3 top-3 grid place-items-center h-10 w-10 rounded-full bg-white/90 text-brand-700 opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500"><Icon name="zoom-in" /></span>
-                  {p.caption && <span className="absolute inset-x-0 bottom-0 p-3 text-left text-xs md:text-sm font-medium text-white translate-y-full group-hover:translate-y-0 transition-transform duration-500">{p.caption}</span>}
+                  {p.caption && <span className="absolute inset-x-0 bottom-0 p-3 text-left text-xs md:text-sm font-medium text-white line-clamp-2 translate-y-full group-hover:translate-y-0 transition-transform duration-500">{p.caption}</span>}
                 </motion.button>
               ))}
             </AnimatePresence>

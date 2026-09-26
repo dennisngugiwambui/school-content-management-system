@@ -10,10 +10,10 @@ import { buildNav, SOCIALS, socialHref } from './navItems';
 /** Top bar colours (Branding & Settings → Header & Top Bar). Only the thin strip above the menu changes. */
 export const TOPBAR_STYLES = {
   light: { top: 'bg-white text-slate-600 border-b border-slate-100', topIcon: 'text-brand-600', topHover: 'hover:text-brand-700', pill: 'bg-brand-600 text-white' },
-  brand: { top: 'bg-brand-700 text-white/85', topIcon: 'text-accent-300', topHover: 'hover:text-white', pill: 'bg-accent-400 text-ink-900' },
+  brand: { top: 'bg-brand-700 text-white', topIcon: 'text-accent-300', topHover: 'hover:text-accent-200', pill: 'bg-white text-brand-800' },
   dark: { top: 'bg-ink-900 text-white/80', topIcon: 'text-accent-400', topHover: 'hover:text-accent-300', pill: 'bg-accent-400 text-ink-900' },
 };
-const topbarStyle = (settings) => TOPBAR_STYLES[settings?.topbar?.style] ?? TOPBAR_STYLES.light;
+const topbarStyle = (settings) => TOPBAR_STYLES[settings?.topbar?.style] ?? TOPBAR_STYLES.brand;
 
 function TopBar({ look }) {
   const { settings, fill } = useSite();

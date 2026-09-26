@@ -549,7 +549,7 @@ export const SETTINGS_TABS = [
         key: 'topbar.style', type: 'select', label: 'Top bar background (the strip with phone, email and announcement)', col: 'col-md-6', empty: false,
         options: [
           { value: 'light', label: 'White' },
-          { value: 'brand', label: 'Main theme colour' },
+          { value: 'brand', label: 'Green (main theme colour, white text)' },
           { value: 'dark', label: 'Dark' },
         ],
         help: 'The menu below keeps its usual look: over the photo at the top, white once visitors scroll.',
