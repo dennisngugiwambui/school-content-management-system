@@ -7,27 +7,13 @@ import { Icon } from '../ui';
 import Brand from './Brand';
 import { buildNav, SOCIALS, socialHref } from './navItems';
 
-/**
- * Header colour styles (Branding & Settings → Header & Top Bar). "light" and "brand" keep one solid colour
- * across the top bar and menu at all times; "transparent" lets the hero photo show until the visitor scrolls.
- */
-export const HEADER_STYLES = {
-  light: {
-    top: 'bg-white text-slate-600 border-b border-slate-100', topIcon: 'text-brand-600', topHover: 'hover:text-brand-700',
-    pill: 'bg-brand-600 text-white', bar: () => 'bg-white shadow-soft', light: () => false,
-  },
-  brand: {
-    top: 'bg-brand-700 text-white/85 border-b border-white/15', topIcon: 'text-accent-300', topHover: 'hover:text-white',
-    pill: 'bg-accent-400 text-ink-900', bar: () => 'bg-brand-700 shadow-soft', light: () => true,
-  },
-  transparent: {
-    top: 'bg-ink-900 text-white/80', topIcon: 'text-accent-400', topHover: 'hover:text-accent-300',
-    pill: 'bg-accent-400 text-ink-900',
-    bar: (scrolled) => (scrolled ? 'bg-white/95 backdrop-blur-lg shadow-soft' : 'bg-gradient-to-b from-ink-950/70 to-transparent'),
-    light: (scrolled) => !scrolled,
-  },
+/** Top bar colours (Branding & Settings → Header & Top Bar). Only the thin strip above the menu changes. */
+export const TOPBAR_STYLES = {
+  light: { top: 'bg-white text-slate-600 border-b border-slate-100', topIcon: 'text-brand-600', topHover: 'hover:text-brand-700', pill: 'bg-brand-600 text-white' },
+  brand: { top: 'bg-brand-700 text-white/85', topIcon: 'text-accent-300', topHover: 'hover:text-white', pill: 'bg-accent-400 text-ink-900' },
+  dark: { top: 'bg-ink-900 text-white/80', topIcon: 'text-accent-400', topHover: 'hover:text-accent-300', pill: 'bg-accent-400 text-ink-900' },
 };
-export const headerStyle = (settings) => HEADER_STYLES[settings?.topbar?.style] ?? HEADER_STYLES.light;
+const topbarStyle = (settings) => TOPBAR_STYLES[settings?.topbar?.style] ?? TOPBAR_STYLES.light;
 
 function TopBar({ look }) {
   const { settings, fill } = useSite();
@@ -70,7 +56,7 @@ function TopBar({ look }) {
   );
 }
 
-function DesktopItem({ item, solid }) { // solid = dark text on a light bar
+function DesktopItem({ item, solid }) {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
   const active = item.end ? pathname === item.to : pathname.startsWith(item.to) || (item.match || []).some((p) => pathname.startsWith(p));
@@ -200,18 +186,17 @@ export default function Header() {
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
-  const look = headerStyle(settings);
-  const light = look.light(scrolled); // white text over a dark / brand / photo background
-  const solid = !light;
+  const look = topbarStyle(settings);
+  const solid = scrolled;
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-[1030]">
         <motion.div animate={{ height: scrolled ? 0 : 'auto', opacity: scrolled ? 0 : 1 }} transition={{ duration: 0.3 }} className="overflow-hidden">
           <TopBar look={look} />
         </motion.div>
-        <div className={cx('transition-all duration-500', look.bar(scrolled))}>
-          <div className={cx('container flex items-center justify-between gap-4 transition-all duration-500', scrolled ? 'py-2.5' : 'py-3.5')}>
-            <Brand light={light} className="max-w-[75%] lg:max-w-[34%]" />
+        <div className={cx('transition-all duration-500', solid ? 'bg-white/95 backdrop-blur-lg shadow-soft' : 'bg-gradient-to-b from-ink-950/70 to-transparent')}>
+          <div className={cx('container flex items-center justify-between gap-4 transition-all duration-500', solid ? 'py-2.5' : 'py-4')}>
+            <Brand light={!solid} className="max-w-[75%] lg:max-w-[34%]" />
             <nav className="hidden lg:block" aria-label="Main navigation">
               <ul className="flex items-center m-0 p-0 list-none">
                 {nav.items.map((item) => <DesktopItem key={item.key} item={item} solid={solid} />)}

@@ -544,15 +544,15 @@ export const SETTINGS_TABS = [
   {
     key: 'announcement', title: 'Header & Top Bar', icon: 'layout-text-window',
     fields: [
-      { key: '_h', type: 'heading', label: 'Header colour' },
+      { key: '_h', type: 'heading', label: 'Top bar colour' },
       {
-        key: 'topbar.style', type: 'select', label: 'Top bar and menu background', col: 'col-md-6', empty: false,
+        key: 'topbar.style', type: 'select', label: 'Top bar background (the strip with phone, email and announcement)', col: 'col-md-6', empty: false,
         options: [
-          { value: 'light', label: 'White (always)' },
-          { value: 'brand', label: 'Main theme colour (always)' },
-          { value: 'transparent', label: 'See-through over photos, white when scrolling' },
+          { value: 'light', label: 'White' },
+          { value: 'brand', label: 'Main theme colour' },
+          { value: 'dark', label: 'Dark' },
         ],
-        help: 'White and theme colour keep the same background on every page, before and after scrolling.',
+        help: 'The menu below keeps its usual look: over the photo at the top, white once visitors scroll.',
       },
       { key: '_c', type: 'heading', label: 'Contact details in the top bar' },
       { key: 'topbar.showContacts', type: 'switch', label: 'Show phone and email', col: 'col-md-4' },

@@ -15,11 +15,12 @@ import { PromoBanner } from '../components/Promo';
 import { ResultsHighlight } from './Results';
 
 /** Counters on a white strip that overlaps the bottom of the hero. */
-function Stats({ data }) {
+function Stats({ data, shapedEdge }) {
   const { fill } = useSite();
   if (!data?.enabled || !data.items?.length) return <div id="after-hero" />;
+  // On phones the card would hide a shaped hero edge completely, so it starts below it there.
   return (
-    <div id="after-hero" className="relative z-10 -mt-20 md:-mt-24">
+    <div id="after-hero" className={cx('relative z-10 md:-mt-24', shapedEdge ? 'mt-6' : '-mt-20')}>
       <div className="container">
         <Reveal y={40} className="grid grid-cols-2 lg:grid-cols-4 overflow-hidden rounded-theme-lg bg-white shadow-lift ring-1 ring-slate-100">
           {data.items.slice(0, 4).map((s, k) => (
@@ -372,7 +373,7 @@ export default function Home() {
   return (
     <>
       <Hero hero={home.hero} />
-      <Stats data={home.stats} />
+      <Stats data={home.stats} shapedEdge={(home.hero?.edge || 'zigzag') !== 'straight'} />
       <PromoBanner />
       <WhyUs data={home.features} />
       <Welcome data={home.welcome} />
