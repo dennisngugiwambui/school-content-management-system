@@ -15,7 +15,8 @@ const SHOW = { 1: '', 2: 'hidden sm:table-cell', 3: 'hidden md:table-cell', 4: '
 const HIDE_WHEN_SHOWN = { 1: 'hidden', 2: 'sm:hidden', 3: 'md:hidden', 4: 'lg:hidden', 5: 'xl:hidden' };
 const TOGGLE_UNTIL = { 1: 'hidden', 2: 'sm:hidden', 3: 'md:hidden', 4: 'lg:hidden', 5: 'xl:hidden' };
 
-export default function ResponsiveTable({ columns, rows, rowKey = (r, i) => i, expand, onRowClick, activeKey, caption, dark = false }) {
+export default function ResponsiveTable({ columns, rows, rowKey = (r, i) => i, expand, onRowClick, activeKey, caption, dark = false, compact = false, detailClassName = 'grid-cols-2 sm:grid-cols-3' }) {
+  const pad = compact ? 'px-2 py-3 first:pl-4 sm:px-2.5' : 'px-3 py-3 sm:px-4';
   const [open, setOpen] = useState(null);
   const maxPriority = Math.max(...columns.map((c) => c.priority || 1));
   const hasExtra = typeof expand === 'function';
@@ -26,9 +27,9 @@ export default function ResponsiveTable({ columns, rows, rowKey = (r, i) => i, e
       <table className="w-full border-collapse text-left text-sm">
         {caption && <caption className="sr-only">{caption}</caption>}
         <thead>
-          <tr className={cx('text-[0.7rem] uppercase tracking-wider', dark ? 'bg-white/10 text-white/70' : 'bg-slate-50 text-slate-500')}>
+          <tr className={cx('text-[0.7rem] uppercase tracking-wider', dark ? 'bg-white/10 text-white/70' : 'bg-brand-700 text-white')}>
             {columns.map((c) => (
-              <th key={c.key} scope="col" className={cx('px-3 py-3 sm:px-4 font-semibold whitespace-nowrap', SHOW[c.priority || 1], c.align === 'right' && 'text-right', c.align === 'center' && 'text-center')}>{c.label}</th>
+              <th key={c.key} scope="col" className={cx(pad, 'font-semibold whitespace-nowrap', SHOW[c.priority || 1], c.align === 'right' && 'text-right', c.align === 'center' && 'text-center')}>{c.label}</th>
             ))}
             <th scope="col" className={cx('w-10 px-2', !hasExtra && TOGGLE_UNTIL[maxPriority])}><span className="sr-only">Details</span></th>
           </tr>
@@ -45,11 +46,11 @@ export default function ResponsiveTable({ columns, rows, rowKey = (r, i) => i, e
                   className={cx('cursor-pointer border-t transition-colors', dark ? 'border-white/10 hover:bg-white/5' : 'border-slate-100 hover:bg-brand-50/60', activeKey === key && (dark ? 'bg-white/10' : 'bg-brand-50'))}
                 >
                   {columns.map((c) => (
-                    <td key={c.key} className={cx('px-3 py-3 sm:px-4 align-middle', SHOW[c.priority || 1], c.align === 'right' && 'text-right', c.align === 'center' && 'text-center', c.className)}>{cell(c, row)}</td>
+                    <td key={c.key} className={cx(pad, 'align-middle', SHOW[c.priority || 1], c.align === 'right' && 'text-right', c.align === 'center' && 'text-center', c.className)}>{cell(c, row)}</td>
                   ))}
-                  <td className={cx('w-10 px-2 text-right', !(hasExtra && extra) && TOGGLE_UNTIL[maxPriority])}>
+                  <td className={cx('w-10 px-2 text-right', !hasExtra && TOGGLE_UNTIL[maxPriority])}>
                     <button type="button" onClick={(e) => { e.stopPropagation(); setOpen(isOpen ? null : key); }} aria-expanded={isOpen} aria-label={isOpen ? 'Hide details' : 'Show details'}
-                      className={cx('grid place-items-center h-8 w-8 rounded-full transition', dark ? 'text-white/70 hover:bg-white/10' : 'text-slate-500 hover:bg-brand-100 hover:text-brand-700', isOpen && (dark ? 'bg-white/10' : 'bg-brand-100 text-brand-700'))}>
+                      className={cx('grid place-items-center h-8 w-8 rounded-full transition', !extra && TOGGLE_UNTIL[maxPriority], dark ? 'text-white/70 hover:bg-white/10' : 'text-slate-500 hover:bg-brand-100 hover:text-brand-700', isOpen && (dark ? 'bg-white/10' : 'bg-brand-100 text-brand-700'))}>
                       <Icon name="chevron-down" className={cx('text-xs transition-transform duration-300', isOpen && 'rotate-180')} />
                     </button>
                   </td>
@@ -60,7 +61,7 @@ export default function ResponsiveTable({ columns, rows, rowKey = (r, i) => i, e
                       {isOpen && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                           <div className={cx('px-3 pb-4 pt-1 sm:px-4', dark ? 'bg-white/5' : 'bg-slate-50/70')}>
-                            <dl className="m-0 grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 pt-2">
+                            <dl className={cx('m-0 grid gap-x-4 gap-y-2 pt-2', detailClassName)}>
                               {columns.filter((c) => (c.priority || 1) > 1).map((c) => (
                                 <div key={c.key} className={cx(HIDE_WHEN_SHOWN[c.priority])}>
                                   <dt className={cx('text-[0.65rem] uppercase tracking-wider', dark ? 'text-white/50' : 'text-slate-400')}>{c.label}</dt>

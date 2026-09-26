@@ -1,5 +1,7 @@
 import { HERO_EFFECTS } from '../pages/home/Hero';
 import { gradeScale } from '../lib/results';
+import { EDGE_SHAPES } from '../components/EdgeShape';
+import { promoSlug } from '../pages/PromoPage';
 
 /**
  * CMS editor definitions. Each content key maps to sections; each section edits
@@ -42,6 +44,7 @@ export const CONTENT_SCHEMAS = {
             key: 'transition', type: 'select', label: 'Slide transition', col: 'col-md-3', empty: false,
             options: [{ value: 'mix', label: 'Mixed (new style each time)' }, ...HERO_EFFECTS],
           },
+          { key: 'edge', type: 'select', label: 'Bottom edge shape', col: 'col-md-4', empty: false, options: EDGE_SHAPES },
           {
             key: 'slides', type: 'list', label: 'Slides', singular: 'slide', plural: 'slides',
             newItem: { image: '', eyebrow: 'Welcome to {school}', title: 'New slide', subtitle: '', ctaText: 'Learn more', ctaLink: '/about' },
@@ -260,6 +263,7 @@ export const CONTENT_SCHEMAS = {
         fields: [
           { key: 'enabled', type: 'switch', label: 'Show the latest results on the home page', col: 'col-12' },
           { key: 'examName', label: 'Exam name (e.g. KCSE, KJSEA, KPSEA)', col: 'col-md-4' },
+          { key: 'topCount', type: 'number', label: 'Top candidates shown before “View all”', col: 'col-md-4', help: 'The rest open in a list when visitors click View all.' },
           { key: 'gradeScale', label: 'Grades, best first, separated by commas', col: 'col-12', help: 'Used for the grade distribution of each year. KCSE: A, A-, B+, B, B-, C+, C, C-, D+, D, D-, E' },
           { key: 'eyebrow', label: 'Small label', col: 'col-md-4' },
           { key: 'title', label: 'Title (the year is added after it)', col: 'col-md-4' },
@@ -285,10 +289,10 @@ export const CONTENT_SCHEMAS = {
             { key: 'note', label: 'Short note about this year', type: 'textarea', rows: 2 },
             {
               key: 'grades', type: 'counts', label: 'Grade distribution (number of candidates per grade)', keys: (ctx) => gradeScale(ctx.content?.intro?.gradeScale),
-              totalLabel: 'Total candidates entered', help: 'Optional. Shown as a chart and in the results table. Leave empty to hide.',
+              totalLabel: 'Total candidates entered', help: 'Optional. Shown in the grade analysis table and the results-by-year table. Leave empty to hide.',
             },
             {
-              key: 'topStudents', type: 'list', label: 'Top candidates (best first)', singular: 'candidate', plural: 'candidates',
+              key: 'topStudents', type: 'list', label: 'Top candidates (best first; add as many as you like)', singular: 'candidate', plural: 'candidates',
               itemLabel: (t) => `${t.name || 'Candidate'} — ${t.grade || ''}`,
               newItem: { name: '', grade: 'A', points: '', note: '', photo: '' },
               fields: [
@@ -360,12 +364,13 @@ export const CONTENT_SCHEMAS = {
           { key: 'title', label: 'Headline', col: 'col-md-7' },
           { key: 'text', label: 'Text', type: 'textarea', rows: 3 },
           { key: 'buttonText', label: 'Button 1 text', col: 'col-md-3' },
-          { key: 'buttonLink', label: 'Button 1 link', col: 'col-md-3', placeholder: '/about#contact' },
+          { key: 'buttonLink', label: 'Button 1 link', col: 'col-md-3', placeholder: '/admissions' },
           { key: 'button2Text', label: 'Button 2 text', col: 'col-md-3' },
           { key: 'button2Link', label: 'Button 2 link', col: 'col-md-3' },
-          { key: 'delay', type: 'number', label: 'Show after (seconds)', col: 'col-md-4' },
-          { key: 'startDate', type: 'date', label: 'Start showing on (optional)', col: 'col-md-4' },
-          { key: 'endDate', type: 'date', label: 'Stop showing after (optional)', col: 'col-md-4' },
+          { key: 'delay', type: 'number', label: 'Show after (seconds)', col: 'col-md-3' },
+          { key: 'autoClose', type: 'number', label: 'Close by itself after (seconds)', col: 'col-md-3', help: '0 keeps it open until closed.' },
+          { key: 'startDate', type: 'date', label: 'Start showing on (optional)', col: 'col-md-3' },
+          { key: 'endDate', type: 'date', label: 'Stop showing after (optional)', col: 'col-md-3' },
         ],
       },
       {
@@ -386,6 +391,61 @@ export const CONTENT_SCHEMAS = {
           { key: 'startDate', type: 'date', label: 'Start showing on (optional)', col: 'col-md-6' },
           { key: 'endDate', type: 'date', label: 'Stop showing after (optional)', col: 'col-md-6' },
         ],
+      },
+      {
+        key: 'pages', title: 'Promotion Pages', icon: 'window-desktop',
+        help: 'Ready-made pages with their own address, e.g. /admissions. Pick the address, fill in the blocks you need (empty blocks are hidden) and point the pop-up or banner button to it.',
+        fields: [{
+          key: 'items', type: 'list', label: 'Pages', singular: 'page', plural: 'pages',
+          itemLabel: (pg) => `/${promoSlug(pg.slug) || '…'} — ${pg.title || 'Untitled'}${pg.enabled === false ? ' (hidden)' : ''}`,
+          newItem: () => ({ enabled: true, slug: '', title: '', subtitle: '', highlights: [], steps: [], dates: [], requirements: '' }),
+          fields: [
+            { key: 'enabled', type: 'switch', label: 'Page is live', col: 'col-md-4' },
+            {
+              key: 'slug', label: 'Page address', col: 'col-md-8', placeholder: 'admissions-2027',
+              help: 'Letters, numbers and dashes. The page opens at yoursite/your-address. Do not reuse an existing page name such as about or news.',
+            },
+            { key: '_a', type: 'heading', label: 'Top banner' },
+            { key: 'image', type: 'image', label: 'Banner photo', col: 'col-md-4' },
+            { key: 'title', label: 'Page title', col: 'col-md-8' },
+            { key: 'subtitle', label: 'Subtitle', type: 'textarea', rows: 2, col: 'col-md-8' },
+            { key: '_b', type: 'heading', label: 'Introduction' },
+            { key: 'badge', label: 'Small label', col: 'col-md-4' },
+            { key: 'introTitle', label: 'Heading', col: 'col-md-8' },
+            { key: 'intro', label: 'Text', type: 'textarea', rows: 5, help: 'Leave a blank line between paragraphs.' },
+            { key: '_c', type: 'heading', label: 'Side panel: countdown, key dates and download' },
+            { key: 'deadline', type: 'date', label: 'Countdown to (optional)', col: 'col-md-4' },
+            { key: 'deadlineLabel', label: 'Countdown label', col: 'col-md-8' },
+            { key: 'datesTitle', label: 'Key dates heading', col: 'col-md-6' },
+            {
+              key: 'dates', type: 'list', label: 'Key dates', singular: 'date', plural: 'dates',
+              itemLabel: (d) => `${d.label || 'Date'}${d.date ? ` — ${d.date}` : ''}`, newItem: { label: '', date: '' },
+              fields: [{ key: 'label', label: 'What', col: 'col-md-7' }, { key: 'date', type: 'date', label: 'Date (empty = to be announced)', col: 'col-md-5' }],
+            },
+            { key: 'document', type: 'file', label: 'Document to download (optional, e.g. admission form)', nameKey: 'documentName', col: 'col-md-8' },
+            { key: 'documentLabel', label: 'Download button text', col: 'col-md-4' },
+            { key: '_d', type: 'heading', label: 'Highlights' },
+            {
+              key: 'highlights', type: 'list', label: 'Highlight cards', singular: 'highlight', plural: 'highlights',
+              itemLabel: (h) => h.title || 'Highlight', newItem: { icon: 'star', title: '', text: '' },
+              fields: [{ key: 'icon', type: 'icon', label: 'Icon', col: 'col-md-4' }, { key: 'title', label: 'Title', col: 'col-md-8' }, { key: 'text', label: 'Text', type: 'textarea', rows: 2 }],
+            },
+            { key: '_e', type: 'heading', label: 'Steps and requirements' },
+            { key: 'stepsTitle', label: 'Steps heading', col: 'col-md-6' },
+            { key: 'requirementsTitle', label: 'Requirements heading', col: 'col-md-6' },
+            {
+              key: 'steps', type: 'list', label: 'Steps (in order)', singular: 'step', plural: 'steps',
+              itemLabel: (st) => st.title || 'Step', newItem: { title: '', text: '' },
+              fields: [{ key: 'title', label: 'Step', col: 'col-md-5' }, { key: 'text', label: 'Details', col: 'col-md-7' }],
+            },
+            { key: 'requirements', label: 'Requirements (one per line)', type: 'textarea', rows: 4 },
+            { key: '_f', type: 'heading', label: 'Call to action' },
+            { key: 'ctaTitle', label: 'Heading', col: 'col-md-6' },
+            { key: 'ctaText', label: 'Text', col: 'col-md-6' },
+            { key: 'buttonText', label: 'Button text', col: 'col-md-6' },
+            { key: 'buttonLink', label: 'Button link', col: 'col-md-6', placeholder: '/about#contact' },
+          ],
+        }],
       },
     ],
   },
@@ -482,12 +542,27 @@ export const SETTINGS_TABS = [
     ],
   },
   {
-    key: 'announcement', title: 'Top Bar & Footer', icon: 'megaphone',
+    key: 'announcement', title: 'Header & Top Bar', icon: 'layout-text-window',
     fields: [
-      { key: '_', type: 'heading', label: 'Scrolling announcement (top bar)' },
+      { key: '_h', type: 'heading', label: 'Header colour' },
+      {
+        key: 'topbar.style', type: 'select', label: 'Top bar and menu background', col: 'col-md-6', empty: false,
+        options: [
+          { value: 'light', label: 'White (always)' },
+          { value: 'brand', label: 'Main theme colour (always)' },
+          { value: 'transparent', label: 'See-through over photos, white when scrolling' },
+        ],
+        help: 'White and theme colour keep the same background on every page, before and after scrolling.',
+      },
+      { key: '_c', type: 'heading', label: 'Contact details in the top bar' },
+      { key: 'topbar.showContacts', type: 'switch', label: 'Show phone and email', col: 'col-md-4' },
+      { key: 'topbar.phone', label: 'Phone shown (leave empty for the main phone)', col: 'col-md-4', showIf: (v) => v.topbar?.showContacts !== false },
+      { key: 'topbar.email', label: 'Email shown (leave empty for the main email)', col: 'col-md-4', showIf: (v) => v.topbar?.showContacts !== false },
+      { key: '_', type: 'heading', label: 'Scrolling announcement' },
       { key: 'topbar.enabled', type: 'switch', label: 'Show announcement', col: 'col-md-4' },
-      { key: 'topbar.announcement', label: 'Announcement text', col: 'col-md-8' },
-      { key: 'topbar.link', label: 'Announcement link (optional)', col: 'col-md-6', placeholder: '/news' },
+      { key: 'topbar.label', label: 'Tag before the text (e.g. News)', col: 'col-md-4' },
+      { key: 'topbar.link', label: 'Announcement link (optional)', col: 'col-md-4', placeholder: '/news' },
+      { key: 'topbar.announcement', label: 'Announcement text', type: 'textarea', rows: 2, help: 'Use {school}, {year} or {nextYear}.' },
       { key: '__', type: 'heading', label: 'Footer' },
       { key: 'footer.about', label: 'Footer about text', type: 'textarea', rows: 3 },
       { key: 'footer.copyright', label: 'Copyright line (leave empty for automatic)' },

@@ -17,7 +17,7 @@ import Fees from './pages/Fees';
 import Tenders from './pages/Tenders';
 import { NewsList, NewsDetail } from './pages/News';
 import Portal from './pages/Portal';
-import NotFound from './pages/NotFound';
+import PromoPage from './pages/PromoPage';
 import { Icon } from './components/ui';
 import { ADMIN_URL, STATIC } from './lib/api';
 
@@ -113,7 +113,8 @@ export default function App() {
           <Route path="tenders" element={<Tenders />} />
           <Route path="news" element={<NewsList />} />
           <Route path="news/:slug" element={<NewsDetail />} />
-          <Route path="*" element={<NotFound />} />
+          {/* Promotion pages live at addresses the admin chooses; anything else is a 404. */}
+          <Route path="*" element={<PromoPage />} />
         </Route>
       </Routes>
     </Suspense>

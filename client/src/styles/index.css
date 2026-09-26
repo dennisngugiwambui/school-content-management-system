@@ -156,6 +156,7 @@
 /* Bootstrap accordions/navbars use .collapse; never let Tailwind's `visibility: collapse` utility hide them. */
 .collapse.show, .collapsing { visibility: visible; }
 
+@keyframes countdown-bar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
 
 @media (prefers-reduced-motion: reduce) {

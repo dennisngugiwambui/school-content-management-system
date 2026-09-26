@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useSite } from '../../context/SiteContext';
 import { asset } from '../../lib/api';
 import { Icon, SmartLink } from '../../components/ui';
+import EdgeShape from '../../components/EdgeShape';
 
 const text = {
   hidden: { opacity: 0, y: 40 },
@@ -218,6 +219,7 @@ export default function Hero({ hero }) {
           </div>
         </div>
       )}
+      <EdgeShape shape={hero?.edge || 'zigzag'} className="text-white" />
     </section>
   );
 }

@@ -7,25 +7,52 @@ import { Icon } from '../ui';
 import Brand from './Brand';
 import { buildNav, SOCIALS, socialHref } from './navItems';
 
-function TopBar() {
+/**
+ * Header colour styles (Branding & Settings → Header & Top Bar). "light" and "brand" keep one solid colour
+ * across the top bar and menu at all times; "transparent" lets the hero photo show until the visitor scrolls.
+ */
+export const HEADER_STYLES = {
+  light: {
+    top: 'bg-white text-slate-600 border-b border-slate-100', topIcon: 'text-brand-600', topHover: 'hover:text-brand-700',
+    pill: 'bg-brand-600 text-white', bar: () => 'bg-white shadow-soft', light: () => false,
+  },
+  brand: {
+    top: 'bg-brand-700 text-white/85 border-b border-white/15', topIcon: 'text-accent-300', topHover: 'hover:text-white',
+    pill: 'bg-accent-400 text-ink-900', bar: () => 'bg-brand-700 shadow-soft', light: () => true,
+  },
+  transparent: {
+    top: 'bg-ink-900 text-white/80', topIcon: 'text-accent-400', topHover: 'hover:text-accent-300',
+    pill: 'bg-accent-400 text-ink-900',
+    bar: (scrolled) => (scrolled ? 'bg-white/95 backdrop-blur-lg shadow-soft' : 'bg-gradient-to-b from-ink-950/70 to-transparent'),
+    light: (scrolled) => !scrolled,
+  },
+};
+export const headerStyle = (settings) => HEADER_STYLES[settings?.topbar?.style] ?? HEADER_STYLES.light;
+
+function TopBar({ look }) {
   const { settings, fill } = useSite();
   const c = settings?.contact ?? {};
   const t = settings?.topbar ?? {};
+  const phone = t.phone || c.phone;
+  const email = t.email || c.email;
   const socials = SOCIALS.filter(([k]) => settings?.social?.[k]);
+  const link = cx('flex items-center gap-2 transition-colors', look.topHover);
   return (
-    <div className="bg-ink-900 text-white/80 text-[0.8rem]">
+    <div className={cx('text-[0.8rem]', look.top)}>
       <div className="container flex items-center gap-4 py-2">
-        <div className="hidden md:flex items-center gap-5 shrink-0">
-          {c.phone && <a href={`tel:${c.phone}`} className="flex items-center gap-2 hover:text-accent-300 transition-colors"><Icon name="telephone" className="text-accent-400" />{c.phone}</a>}
-          {c.email && <a href={`mailto:${c.email}`} className="flex items-center gap-2 hover:text-accent-300 transition-colors"><Icon name="envelope" className="text-accent-400" />{c.email}</a>}
-        </div>
+        {t.showContacts !== false && (phone || email) && (
+          <div className="hidden md:flex items-center gap-5 shrink-0">
+            {phone && <a href={`tel:${phone.replace(/[^\d+]/g, '')}`} className={link}><Icon name="telephone" className={look.topIcon} />{phone}</a>}
+            {email && <a href={`mailto:${email}`} className={link}><Icon name="envelope" className={look.topIcon} />{email}</a>}
+          </div>
+        )}
         {t.enabled && t.announcement ? (
           <div className="relative flex-1 overflow-hidden min-w-0 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
             <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
               {[0, 1].map((i) => (
                 <span key={i} className="flex items-center gap-2 pr-24 whitespace-nowrap" aria-hidden={i === 1}>
-                  <span className="rounded-full bg-accent-400 px-2 py-0.5 text-[0.65rem] font-bold uppercase text-ink-900">News</span>
-                  {t.link ? <Link to={t.link} className="hover:text-white">{fill(t.announcement)}</Link> : fill(t.announcement)}
+                  {t.label && <span className={cx('rounded-full px-2 py-0.5 text-[0.65rem] font-bold uppercase', look.pill)}>{fill(t.label)}</span>}
+                  {t.link ? <Link to={t.link} className={look.topHover}>{fill(t.announcement)}</Link> : fill(t.announcement)}
                 </span>
               ))}
             </div>
@@ -33,7 +60,7 @@ function TopBar() {
         ) : <div className="flex-1" />}
         <div className="flex items-center gap-3 shrink-0">
           {socials.map(([k, icon]) => (
-            <a key={k} href={socialHref(k, settings.social[k])} target="_blank" rel="noreferrer" aria-label={k} className="hover:text-accent-300 transition-colors hover:-translate-y-0.5 inline-block">
+            <a key={k} href={socialHref(k, settings.social[k])} target="_blank" rel="noreferrer" aria-label={k} className={cx('transition-colors hover:-translate-y-0.5 inline-block', look.topHover)}>
               <Icon name={icon} />
             </a>
           ))}
@@ -43,7 +70,7 @@ function TopBar() {
   );
 }
 
-function DesktopItem({ item, solid }) {
+function DesktopItem({ item, solid }) { // solid = dark text on a light bar
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
   const active = item.end ? pathname === item.to : pathname.startsWith(item.to) || (item.match || []).some((p) => pathname.startsWith(p));
@@ -155,7 +182,7 @@ function MobileMenu({ open, onClose, nav }) {
 }
 
 export default function Header() {
-  const { page, departments, fill } = useSite();
+  const { page, departments, fill, settings } = useSite();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { pathname } = useLocation();
@@ -173,16 +200,18 @@ export default function Header() {
     return () => { document.body.style.overflow = ''; };
   }, [menuOpen]);
 
-  const solid = scrolled;
+  const look = headerStyle(settings);
+  const light = look.light(scrolled); // white text over a dark / brand / photo background
+  const solid = !light;
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-[1030]">
         <motion.div animate={{ height: scrolled ? 0 : 'auto', opacity: scrolled ? 0 : 1 }} transition={{ duration: 0.3 }} className="overflow-hidden">
-          <TopBar />
+          <TopBar look={look} />
         </motion.div>
-        <div className={cx('transition-all duration-500', solid ? 'bg-white/95 backdrop-blur-lg shadow-soft' : 'bg-gradient-to-b from-ink-950/70 to-transparent')}>
-          <div className={cx('container flex items-center justify-between gap-4 transition-all duration-500', solid ? 'py-2.5' : 'py-4')}>
-            <Brand light={!solid} className="max-w-[75%] lg:max-w-[34%]" />
+        <div className={cx('transition-all duration-500', look.bar(scrolled))}>
+          <div className={cx('container flex items-center justify-between gap-4 transition-all duration-500', scrolled ? 'py-2.5' : 'py-3.5')}>
+            <Brand light={light} className="max-w-[75%] lg:max-w-[34%]" />
             <nav className="hidden lg:block" aria-label="Main navigation">
               <ul className="flex items-center m-0 p-0 list-none">
                 {nav.items.map((item) => <DesktopItem key={item.key} item={item} solid={solid} />)}

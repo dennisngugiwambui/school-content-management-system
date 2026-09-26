@@ -41,13 +41,15 @@ function Buttons({ p, onClick, light = false, className }) {
   );
 }
 
-/** Pop-up promotion (admissions, open day…) that appears a few seconds after a visitor arrives. */
+/** Compact pop-up promotion (admissions, open day…). It appears a few seconds after a visitor arrives and closes itself after a while. */
 export function PromoPopup() {
   const { content, fill } = useSite();
   const { pathname } = useLocation();
   const p = content.promo?.popup;
   const [open, setOpen] = useState(false);
+  const [paused, setPaused] = useState(false);
   const eligible = promoActive(p) && (p.where === 'all' || pathname === '/');
+  const life = Math.max(0, Number(p?.autoClose ?? 30) || 0);
 
   useEffect(() => {
     if (!eligible || wasSeen(p)) return;
@@ -69,37 +71,49 @@ export function PromoPopup() {
     <AnimatePresence>
       {open && eligible && (
         <motion.div
-          key="promo" className="fixed inset-0 z-[1060] flex items-end sm:items-center justify-center p-3 sm:p-6"
+          key="promo" className="fixed inset-0 z-[1060] grid place-items-center p-5"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           role="dialog" aria-modal="true" aria-labelledby="promo-title"
         >
-          <button type="button" className="absolute inset-0 bg-ink-950/60 backdrop-blur-sm" onClick={close} aria-label="Close" />
+          <button type="button" className="absolute inset-0 bg-ink-950/55 backdrop-blur-[2px]" onClick={close} aria-label="Close" />
           <motion.div
-            initial={{ opacity: 0, y: 60, scale: 0.94 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 40, scale: 0.96 }}
-            transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-            className={cx('relative w-full max-w-3xl overflow-hidden rounded-theme-lg bg-white shadow-2xl max-h-[92svh] overflow-y-auto', p.image && 'md:grid md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]')}
+            initial={{ opacity: 0, y: 24, scale: 0.94 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 16, scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+            onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onTouchStart={() => setPaused(true)}
+            className="relative w-full max-w-[22rem] sm:max-w-sm overflow-hidden rounded-theme-lg bg-white text-center shadow-2xl ring-1 ring-black/5"
           >
-            <button type="button" onClick={close} className="absolute right-3 top-3 z-10 grid place-items-center h-9 w-9 rounded-full bg-white/90 text-slate-700 shadow ring-1 ring-black/5 hover:bg-white hover:text-brand-700" aria-label="Close">
-              <Icon name="x-lg" />
+            {life > 0 && (
+              <span
+                className="absolute inset-x-0 top-0 z-20 h-1 origin-left bg-accent-400"
+                style={{ animation: `countdown-bar ${life}s linear forwards`, animationPlayState: paused ? 'paused' : 'running' }}
+                onAnimationEnd={close}
+              />
+            )}
+            <button type="button" onClick={close} className="absolute right-2.5 top-2.5 z-10 grid place-items-center h-8 w-8 rounded-full bg-black/35 text-white backdrop-blur hover:bg-black/55" aria-label="Close">
+              <Icon name="x-lg" className="text-sm" />
             </button>
-            {p.image && (
-              <div className="relative">
-                <SmartImage src={p.image} alt="" className="aspect-[16/9] md:aspect-auto md:h-full md:min-h-[380px]" />
-                <span className="absolute inset-0 bg-gradient-to-t from-ink-950/50 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:to-ink-950/10" />
+            {p.image ? (
+              <div className="relative h-32 sm:h-36">
+                <SmartImage src={p.image} alt="" className="h-full w-full" imgClassName="object-[50%_22%]" />
+                <span className="absolute inset-0 bg-gradient-to-t from-brand-900/70 via-brand-900/10 to-transparent" />
+                {p.badge && <Badge text={fill(p.badge)} className="absolute bottom-3 left-1/2 -translate-x-1/2" />}
+              </div>
+            ) : (
+              <div className="bg-gradient-to-br from-brand-600 to-brand-800 px-5 pt-6 pb-5">
+                <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white/15 text-2xl text-white"><Icon name="megaphone-fill" /></span>
+                {p.badge && <Badge text={fill(p.badge)} className="mt-3" />}
               </div>
             )}
-            <div className="relative p-6 sm:p-8 md:p-10">
-              <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-brand-100/60 blur-2xl" />
-              {p.badge && (
-                <span className="relative inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-700 ring-1 ring-brand-100">
-                  <span className="relative flex h-2 w-2"><span className="absolute inset-0 rounded-full bg-brand-500 animate-ping" /><span className="relative h-2 w-2 rounded-full bg-brand-600" /></span>
-                  {fill(p.badge)}
-                </span>
+            <div className="px-5 pb-5 pt-4 sm:px-6">
+              <h2 id="promo-title" className="m-0 text-lg sm:text-xl font-extrabold leading-snug">{fill(p.title)}</h2>
+              {p.text && <p className="m-0 mt-2 text-sm leading-relaxed text-slate-600 line-clamp-4">{fill(p.text)}</p>}
+              {(p.buttonText || p.button2Text) && (
+                <div className="mt-4 grid gap-2">
+                  {p.buttonText && <SmartLink to={p.buttonLink} onClick={close} className="btn-brand w-full !py-2.5 text-sm">{fill(p.buttonText)}<Icon name="arrow-right" /></SmartLink>}
+                  {p.button2Text && <SmartLink to={p.button2Link} onClick={close} className="btn-outline-brand w-full !py-2 text-sm">{fill(p.button2Text)}</SmartLink>}
+                </div>
               )}
-              <h2 id="promo-title" className="relative mt-4 text-2xl sm:text-3xl font-extrabold leading-tight">{fill(p.title)}</h2>
-              {p.text && <p className="relative mt-3 mb-0 text-slate-600 leading-relaxed">{fill(p.text)}</p>}
-              <Buttons p={p} onClick={close} className="relative mt-6" />
-              <button type="button" onClick={close} className="relative mt-5 block text-sm font-medium text-slate-400 hover:text-slate-600">Maybe later</button>
+              <button type="button" onClick={close} className="mt-3 text-xs font-medium text-slate-400 hover:text-slate-600">Maybe later</button>
             </div>
           </motion.div>
         </motion.div>
@@ -108,7 +122,16 @@ export function PromoPopup() {
   );
 }
 
-function useCountdown(date) {
+function Badge({ text, className }) {
+  return (
+    <span className={cx('inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-accent-400 px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-ink-900 shadow', className)}>
+      <span className="relative flex h-1.5 w-1.5"><span className="absolute inset-0 rounded-full bg-ink-900/60 animate-ping" /><span className="relative h-1.5 w-1.5 rounded-full bg-ink-900" /></span>
+      {text}
+    </span>
+  );
+}
+
+export function useCountdown(date) {
   const target = date ? new Date(`${date}T23:59:59`).getTime() : 0;
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
