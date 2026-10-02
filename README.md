@@ -7,13 +7,13 @@ Everything on the site (name, colours, images, pages, staff, prefects, results, 
 
 ```bash
 npm run install:all      # installs the root, server and client packages
-npm run dev:server       # API on http://localhost:5000 (restarts when code changes)
+npm run dev:server       # API on http://localhost:5050 (restarts when code changes)
 npm run dev:client       # website on http://localhost:5173
 ```
 
 Open http://localhost:5173 and follow the setup wizard, then sign in at `/portal`.
 
-For a single production server: `npm run build` then `npm start` (the API also serves the built site on port 5000).
+For a single production server: `npm run build` then `npm start` (the API also serves the built site on port 5050).
 
 ## Publish the public website on GitHub Pages (free)
 
@@ -52,6 +52,30 @@ Options:
 
 The database (`server/data`, with passwords and sessions) and `server/uploads` are never committed to git
 (see `.gitignore`); only the public content and photos are published to GitHub Pages.
+
+## Portal: website admin + school management system
+
+The **Portal** button opens one sign-in page with two options:
+
+- **School portal**: links to the school management system (`School-ERP-system-Available-for-demo-`)
+  where students, parents, teachers and staff sign in.
+- **Website administrators**: the form below it signs in to this CMS to edit the website.
+
+Recommended hosting on one domain, e.g. `yourschool.co.ke`:
+
+| Address | What runs there |
+|---|---|
+| `yourschool.co.ke` (and `www.`) | This website + CMS (`npm run build`, then `npm start`; port 5050) |
+| `portal.yourschool.co.ke` | The school management system (its frontend on port 3000 and its API on 5000) |
+
+1. Add DNS records for `@`, `www` and `portal` pointing to your server.
+2. In the management system's `backend/.env`, set `FRONTEND_URL=https://portal.yourschool.co.ke`.
+3. The school portal link works out its own address: on `yourschool.co.ke` it goes to
+   `https://portal.yourschool.co.ke/login`, and on your computer to `http://localhost:3000/login`.
+   To use a different address, set it in **Admin → Page Banners & Menu → Portal (login page) → School portal address**
+   (or build with `VITE_SCHOOL_PORTAL_URL=...`). You can also change the link text or hide it there.
+
+On GitHub Pages the address can't be guessed, so set the school portal address in the admin panel before deploying.
 
 ## Security notes
 

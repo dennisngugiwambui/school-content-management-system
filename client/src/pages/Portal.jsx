@@ -4,9 +4,25 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { useSite, usePageTitle } from '../context/SiteContext';
 import { useAuth } from '../context/AuthContext';
-import { asset } from '../lib/api';
+import { asset, schoolPortalUrl } from '../lib/api';
 import Brand from '../components/layout/Brand';
 import { Icon, Spinner } from '../components/ui';
+
+/** Link to the school management system, where students, parents and staff sign in. */
+export function SchoolPortalCard({ cfg, fill }) {
+  const url = schoolPortalUrl(cfg.erpUrl);
+  if (!url || cfg.erpEnabled === false) return null;
+  return (
+    <a href={`${url}/login`} className="group mt-8 flex items-center gap-4 rounded-2xl border border-brand-100 bg-brand-50 p-4 no-underline transition hover:border-brand-300 hover:shadow-soft">
+      <span className="grid place-items-center h-12 w-12 shrink-0 rounded-xl bg-brand-600 text-white text-xl"><Icon name="mortarboard" /></span>
+      <span className="flex-1 text-left">
+        <span className="block font-bold text-ink-950">{fill(cfg.erpTitle) || 'School portal'}</span>
+        <span className="block text-sm text-slate-500">{fill(cfg.erpText) || 'Students, parents, teachers and staff sign in here.'}</span>
+      </span>
+      <Icon name="box-arrow-up-right" className="text-brand-600 transition group-hover:translate-x-0.5" />
+    </a>
+  );
+}
 
 export default function Portal() {
   const { page, fill, settings, schoolName } = useSite();
@@ -64,7 +80,12 @@ export default function Portal() {
           <h1 className="mt-6 text-3xl md:text-4xl font-extrabold">{fill(cfg.title) || 'Welcome back'}</h1>
           <p className="text-slate-500">{fill(cfg.subtitle)}</p>
 
-          <form onSubmit={submit} className="mt-8 space-y-5" noValidate>
+          <SchoolPortalCard cfg={cfg} fill={fill} />
+          <div className="mt-8 flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+            <span className="h-px flex-1 bg-slate-200" />{fill(cfg.adminLabel) || 'Website administrators'}<span className="h-px flex-1 bg-slate-200" />
+          </div>
+
+          <form onSubmit={submit} className="mt-6 space-y-5" noValidate>
             {expired && !error && (
               <div className="alert alert-warning !rounded-xl flex items-center gap-2 !mb-0 text-sm">
                 <Icon name="clock-history" />Your session ended for security. Please sign in again.

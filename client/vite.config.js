@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-const API = process.env.VITE_DEV_API || 'http://localhost:5000';
+const API = process.env.VITE_DEV_API || 'http://localhost:5050';
 
 export default defineConfig({
   // GitHub Pages serves the site from /<repo-name>/; scripts/build-pages.mjs sets this.

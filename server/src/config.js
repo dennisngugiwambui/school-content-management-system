@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const ROOT = path.resolve(__dirname, '..');
-export const PORT = Number(process.env.PORT) || 5000;
+export const PORT = Number(process.env.PORT) || 5050;
 export const IS_PROD = process.env.NODE_ENV === 'production';
 export const DATA_DIR = path.resolve(ROOT, process.env.DATA_DIR || 'data');
 export const UPLOAD_DIR = path.resolve(ROOT, process.env.UPLOAD_DIR || 'uploads');

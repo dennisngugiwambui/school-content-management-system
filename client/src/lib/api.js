@@ -8,6 +8,21 @@ export const STATIC = import.meta.env.VITE_STATIC === 'true';
 export const ADMIN_URL = (import.meta.env.VITE_ADMIN_URL || '').replace(/\/$/, '');
 const PUBLIC_BASE = import.meta.env.BASE_URL || '/';
 
+/**
+ * Address of the school management system (students, parents, staff).
+ * Order: the address saved in the CMS, then VITE_SCHOOL_PORTAL_URL, then a guess:
+ * portal.<this domain> when live (school.co.ke → portal.school.co.ke), or port 3000 locally.
+ */
+export function schoolPortalUrl(saved) {
+  const url = (saved || import.meta.env.VITE_SCHOOL_PORTAL_URL || '').trim().replace(/\/$/, '');
+  if (url) return /^https?:\/\//.test(url) ? url : `https://${url}`;
+  const { protocol, hostname } = window.location;
+  if (hostname === 'localhost' || /^[\d.]+$/.test(hostname) || hostname.endsWith('.github.io')) {
+    return hostname.endsWith('.github.io') ? '' : `${protocol}//${hostname}:3000`;
+  }
+  return `${protocol}//portal.${hostname.replace(/^www\./, '')}`;
+}
+
 /** File name a public API path is exported to, e.g. /public/news?category=event → news_category_event. Shared with the export script. */
 export const staticName = (path) => path.replace(/^\/public\//, '').replace(/[^\w-]+/g, '_');
 const TOKEN_KEY = 'school_cms_token';

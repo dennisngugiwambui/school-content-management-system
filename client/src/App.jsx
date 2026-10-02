@@ -16,7 +16,7 @@ import Results from './pages/Results';
 import Fees from './pages/Fees';
 import Tenders from './pages/Tenders';
 import { NewsList, NewsDetail } from './pages/News';
-import Portal from './pages/Portal';
+import Portal, { SchoolPortalCard } from './pages/Portal';
 import PromoPage from './pages/PromoPage';
 import { Icon } from './components/ui';
 import { ADMIN_URL, STATIC } from './lib/api';
@@ -33,14 +33,16 @@ const ResourcePage = lazy(() => import('./admin/ResourcePage'));
 
 /** On the static (GitHub Pages) site there is no server, so sign-in lives on the main CMS. */
 function StaticPortal() {
+  const { page, fill } = useSite();
   return (
     <div className="min-h-screen grid place-items-center bg-slate-50 p-6 text-center">
       <div className="max-w-md">
         <span className="inline-grid place-items-center h-16 w-16 rounded-2xl bg-brand-600 text-white text-3xl shadow-glow"><Icon name="shield-lock" /></span>
-        <h1 className="mt-5 text-2xl font-extrabold">Staff sign-in</h1>
-        <p className="text-slate-500">This is the public website. Content is managed on the school&apos;s main system.</p>
+        <h1 className="mt-5 text-2xl font-extrabold">Sign in</h1>
+        <p className="text-slate-500">This is the public website. Choose where you want to sign in.</p>
+        <SchoolPortalCard cfg={page('portal')} fill={fill} />
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          {ADMIN_URL && <a href={`${ADMIN_URL}/portal`} className="btn-brand">Go to the admin portal <Icon name="box-arrow-up-right" /></a>}
+          {ADMIN_URL && <a href={`${ADMIN_URL}/portal`} className="btn-brand">Website admin <Icon name="box-arrow-up-right" /></a>}
           <a href={import.meta.env.BASE_URL} className="btn-outline-brand">Back to website</a>
         </div>
       </div>

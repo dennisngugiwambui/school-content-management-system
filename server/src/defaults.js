@@ -408,6 +408,11 @@ export const DEFAULT_CONTENT = {
       subtitle: 'Sign in to the {school} portal to continue.',
       image: img('students-uniform'),
       note: 'Authorised users only. Contact the school administrator if you need access.',
+      erpEnabled: true,
+      erpUrl: '',
+      erpTitle: 'School portal',
+      erpText: 'Students, parents, teachers and staff sign in here.',
+      adminLabel: 'Website administrators',
     },
   },
 
