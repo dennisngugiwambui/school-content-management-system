@@ -1,4 +1,5 @@
 import { waNumber } from '../WhatsAppChat';
+import { portalHasLinks } from '../../lib/api';
 /** Build the public navigation from CMS page settings and the live department list. */
 export function buildNav(page, departments = [], fill = (s) => s) {
   const label = (key, fallback) => fill(page(key).label || fallback);
@@ -60,7 +61,7 @@ export function buildNav(page, departments = [], fill = (s) => s) {
         : shown('tenders') && { key: 'tenders', to: '/tenders', label: label('tenders', 'Tenders') },
   ].filter(Boolean);
 
-  return { items, portal: shown('portal') ? { to: '/portal', label: label('portal', 'Portal') } : null };
+  return { items, portal: shown('portal') && portalHasLinks(page('portal')) ? { to: '/portal', label: label('portal', 'Portal') } : null };
 }
 
 export const SOCIALS = [

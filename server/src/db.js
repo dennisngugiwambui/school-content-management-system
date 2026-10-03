@@ -4,8 +4,11 @@ import { DatabaseSync } from 'node:sqlite';
 import { DATA_DIR } from './config.js';
 import { deepMerge } from './lib/utils.js';
 import { DEFAULT_SETTINGS, DEFAULT_CONTENT } from './defaults.js';
+import { restoreBackup } from './lib/backup.js';
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
+// On hosts with a temporary disk, bring back the saved content before opening the database.
+await restoreBackup();
 
 export const db = new DatabaseSync(path.join(DATA_DIR, 'school.db'));
 

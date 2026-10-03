@@ -17,11 +17,16 @@ export function schoolPortalUrl(saved) {
   const url = (saved || import.meta.env.VITE_SCHOOL_PORTAL_URL || '').trim().replace(/\/$/, '');
   if (url) return /^https?:\/\//.test(url) ? url : `https://${url}`;
   const { protocol, hostname } = window.location;
-  if (hostname === 'localhost' || /^[\d.]+$/.test(hostname) || hostname.endsWith('.github.io')) {
-    return hostname.endsWith('.github.io') ? '' : `${protocol}//${hostname}:3000`;
+  // Free hosting addresses (GitHub Pages, Render) have no portal.<domain> to guess.
+  const hosted = /\.(github\.io|onrender\.com)$/.test(hostname);
+  if (hostname === 'localhost' || /^[\d.]+$/.test(hostname) || hosted) {
+    return hosted ? '' : `${protocol}//${hostname}:3000`;
   }
   return `${protocol}//portal.${hostname.replace(/^www\./, '')}`;
 }
+
+/** True when the Portal page has at least one place to send people (a static site may have neither). */
+export const portalHasLinks = (cfg = {}) => !STATIC || !!ADMIN_URL || (cfg.erpEnabled !== false && !!schoolPortalUrl(cfg.erpUrl));
 
 /** File name a public API path is exported to, e.g. /public/news?category=event → news_category_event. Shared with the export script. */
 export const staticName = (path) => path.replace(/^\/public\//, '').replace(/[^\w-]+/g, '_');

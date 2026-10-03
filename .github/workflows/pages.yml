@@ -1,0 +1,53 @@
+# Rebuilds the GitHub Pages site whenever the code (master) or the website content (cms-data) changes.
+# Content is saved to cms-data by the CMS (see server/src/lib/backup.js).
+#
+# Repository settings needed (Settings → Secrets and variables → Actions):
+#   secret   BACKUP_KEY         the same BACKUP_KEY the CMS uses
+#   variable ADMIN_URL          address of the CMS, e.g. https://school-cms.onrender.com
+#   variable SCHOOL_PORTAL_URL  (optional) address of the school management system
+name: Publish website
+
+on:
+  push:
+    branches: [master, cms-data]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Install
+        run: npm ci && npm --prefix server ci && npm --prefix client ci
+
+      - name: Build the website from the saved content
+        run: npm run pages:build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+          BACKUP_KEY: ${{ secrets.BACKUP_KEY }}
+          VITE_ADMIN_URL: ${{ vars.ADMIN_URL }}
+          VITE_SCHOOL_PORTAL_URL: ${{ vars.SCHOOL_PORTAL_URL }}
+
+      - name: Publish to the gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: client/dist-pages
+          commit_message: Update website

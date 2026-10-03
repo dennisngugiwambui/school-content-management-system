@@ -13,6 +13,7 @@ import setupRoutes from './routes/setup.js';
 import authRoutes from './routes/auth.js';
 import publicRoutes from './routes/public.js';
 import adminRoutes from './routes/admin.js';
+import { BACKUP_ON, scheduleBackup, flushBackup } from './lib/backup.js';
 
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
@@ -33,6 +34,14 @@ if (CORS_ORIGIN) app.use(cors({ origin: CORS_ORIGIN.split(',').map((s) => s.trim
 app.use(morgan(IS_PROD ? 'combined' : 'dev'));
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Back up the content to GitHub after every successful change (see lib/backup.js).
+app.use((req, res, next) => {
+  if (req.method !== 'GET' && !/^\/api\/auth\/log(in|out)/.test(req.path)) {
+    res.on('finish', () => res.statusCode < 400 && scheduleBackup());
+  }
+  next();
+});
 
 app.use('/uploads', express.static(UPLOAD_DIR, { maxAge: '30d', immutable: true, fallthrough: false }));
 
@@ -66,3 +75,10 @@ replacePlaceholderPhotos();
 app.listen(PORT, () => {
   console.log(`\n  School CMS API running at http://localhost:${PORT}\n`);
 });
+
+// Save any pending changes before the host stops the server.
+if (BACKUP_ON) {
+  for (const signal of ['SIGTERM', 'SIGINT']) {
+    process.once(signal, () => flushBackup().catch((err) => console.error('Backup failed:', err.message)).finally(() => process.exit(0)));
+  }
+}

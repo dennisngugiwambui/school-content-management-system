@@ -1,0 +1,22 @@
+# Render blueprint: runs the website + CMS (admin panel) on Render's free plan.
+# Render's free disk is wiped on every restart, so content is kept in the repository's
+# cms-data branch (see server/src/lib/backup.js). Set GITHUB_TOKEN and BACKUP_KEY when prompted.
+services:
+  - type: web
+    name: school-cms
+    runtime: node
+    plan: free
+    buildCommand: npm --prefix server ci && npm --prefix client ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: GITHUB_REPO
+        value: dennisngugiwambui/school-content-management-system
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: BACKUP_KEY
+        sync: false

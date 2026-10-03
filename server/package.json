@@ -12,7 +12,8 @@
     "dev": "node --watch --disable-warning=ExperimentalWarning src/index.js",
     "start": "node --disable-warning=ExperimentalWarning src/index.js",
     "reset": "node --disable-warning=ExperimentalWarning src/reset.js",
-    "admin": "node --disable-warning=ExperimentalWarning src/admin-cli.js"
+    "admin": "node --disable-warning=ExperimentalWarning src/admin-cli.js",
+    "backup": "node --disable-warning=ExperimentalWarning src/backup-cli.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

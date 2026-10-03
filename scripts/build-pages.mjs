@@ -65,9 +65,10 @@ process.on('exit', stop);
 
 try {
   let ready = false;
-  for (let i = 0; i < 60 && !ready; i++) {
+  // Up to 2 minutes: on a fresh checkout the server first restores content from the GitHub backup.
+  for (let i = 0; i < 240 && !ready; i++) {
     ready = await fetch(`${API}/site`).then((r) => r.ok).catch(() => false);
-    if (!ready) await sleep(250);
+    if (!ready) await sleep(500);
   }
   if (!ready) throw new Error('The API did not start. Is the server installed (npm install in server/)?');
 
@@ -89,6 +90,11 @@ try {
   step('Exporting content');
   const site = await save('/public/site');
   if (!site?.installed) throw new Error('The school has not been set up yet. Run the site once and finish the setup wizard.');
+  const portal = site.content?.pages?.portal ?? {};
+  if (!process.env.VITE_ADMIN_URL && !process.env.VITE_SCHOOL_PORTAL_URL && !portal.erpUrl) {
+    console.warn('  ⚠ No sign-in address is set, so the Portal button is hidden on this site.\n'
+      + '    Set Admin → Page Banners & Menu → Portal → School portal address, or VITE_SCHOOL_PORTAL_URL / VITE_ADMIN_URL.');
+  }
   for (const p of ['/public/home', '/public/gallery', '/public/staff', '/public/prefects', '/public/news?category=news', '/public/news?category=event', '/public/tenders']) await save(p);
   const departments = (await save('/public/departments')) ?? [];
   for (const d of departments) await save(`/public/departments/${d.slug}`);

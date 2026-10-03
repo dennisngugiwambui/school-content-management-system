@@ -53,6 +53,38 @@ Options:
 The database (`server/data`, with passwords and sessions) and `server/uploads` are never committed to git
 (see `.gitignore`); only the public content and photos are published to GitHub Pages.
 
+## Edit content online: CMS on Render (free) + automatic Pages updates
+
+So admins can sign in from anywhere, the CMS runs on [Render](https://render.com)'s free plan and the
+GitHub Pages site rebuilds itself after every change:
+
+- Render's free disk is wiped on every restart, so each change made in the admin panel is saved to the
+  repository's **`cms-data` branch**: the database encrypted with `BACKUP_KEY`, plus the uploaded files.
+  The server restores from it when it starts (`server/src/lib/backup.js`).
+- Each save to `cms-data` runs the **Publish website** GitHub Action (`.github/workflows/pages.yml`), which
+  rebuilds the Pages site with the new content, usually within a few minutes.
+- The Portal button on the Pages site opens the CMS on Render.
+
+One-time setup:
+
+1. **Token:** GitHub → Settings → Developer settings → Fine-grained tokens → Generate. Repository access:
+   only this repository; permissions: **Contents: Read and write**.
+2. **Backup key:** any long random password (e.g. from a password manager). Keep it safe: without it the
+   saved database cannot be read.
+3. **Save the current content** from your computer: put `GITHUB_TOKEN`, `GITHUB_REPO` and `BACKUP_KEY` in
+   `server/.env` (see `.env.example`), then run `npm --prefix server run backup`.
+4. **Render:** New → Blueprint → pick this repository (it reads `render.yaml`) and enter `GITHUB_TOKEN`
+   and `BACKUP_KEY` when asked. Note the address it gets, e.g. `https://school-cms.onrender.com`.
+5. **GitHub repository → Settings → Secrets and variables → Actions:** add the secret `BACKUP_KEY` and the
+   variable `ADMIN_URL` (the Render address). Optionally add the variable `SCHOOL_PORTAL_URL`.
+6. **Settings → Actions → General → Workflow permissions:** Read and write. Then run **Publish website**
+   once from the Actions tab.
+
+Admins now sign in at `<Render address>/portal` (or via the Portal button). Free Render services sleep
+after 15 minutes without visitors, so the first sign-in of the day can take about a minute.
+Use one place for editing: once Render is set up, edit there rather than on your computer
+(your computer's copy is not updated from the backup).
+
 ## Portal: website admin + school management system
 
 The **Portal** button opens one sign-in page with two options:

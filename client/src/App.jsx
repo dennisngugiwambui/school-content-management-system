@@ -19,7 +19,7 @@ import { NewsList, NewsDetail } from './pages/News';
 import Portal, { SchoolPortalCard } from './pages/Portal';
 import PromoPage from './pages/PromoPage';
 import { Icon } from './components/ui';
-import { ADMIN_URL, STATIC } from './lib/api';
+import { ADMIN_URL, STATIC, portalHasLinks } from './lib/api';
 
 // The CMS is split into its own bundle so public visitors never download it.
 const Setup = lazy(() => import('./pages/Setup'));
@@ -39,7 +39,9 @@ function StaticPortal() {
       <div className="max-w-md">
         <span className="inline-grid place-items-center h-16 w-16 rounded-2xl bg-brand-600 text-white text-3xl shadow-glow"><Icon name="shield-lock" /></span>
         <h1 className="mt-5 text-2xl font-extrabold">Sign in</h1>
-        <p className="text-slate-500">This is the public website. Choose where you want to sign in.</p>
+        <p className="text-slate-500">
+          {portalHasLinks(page('portal')) ? 'This is the public website. Choose where you want to sign in.' : 'Online sign-in is not available yet. Please contact the school office.'}
+        </p>
         <SchoolPortalCard cfg={page('portal')} fill={fill} />
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           {ADMIN_URL && <a href={`${ADMIN_URL}/portal`} className="btn-brand">Website admin <Icon name="box-arrow-up-right" /></a>}
