@@ -14,7 +14,7 @@ export default function DepartmentDetail() {
   const crumbs = [{ label: fill(page('departments').label || 'Departments'), to: '/departments' }];
 
   if (loading) return (<><PageHeader title="Loading…" subtitle="" crumbs={crumbs} /><div className="container section"><div className="skeleton h-96" /></div></>);
-  if (error) return (<><PageHeader title="Department not found" subtitle="" crumbs={crumbs} /><div className="container section"><ErrorState error={error} onRetry={reload} /></div></>);
+  if (error) return (<><PageHeader title={error.status === 404 ? 'Department not found' : 'Department'} subtitle="" crumbs={crumbs} /><div className="container section"><ErrorState error={error} onRetry={reload} /></div></>);
 
   const { department: d, head, members, others } = data;
   return (

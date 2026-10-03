@@ -9,7 +9,6 @@ import { Avatar, Icon, Reveal, RichText, SectionHeading, SmartImage, SmartLink }
 import Counter from '../components/Counter';
 import Lightbox from '../components/Lightbox';
 import Timeline from '../components/Timeline';
-import BreakImage from '../components/BreakImage';
 import Hero from './home/Hero';
 import { PromoBanner } from '../components/Promo';
 import { ResultsHighlight } from './Results';
@@ -50,13 +49,13 @@ function WhyUs({ data }) {
         <div className="row g-5 align-items-center">
           <div className="col-lg-5">
             <Reveal x={-40} y={0} className="relative mx-auto max-w-md lg:max-w-none pr-10 pb-12 sm:pr-20 sm:pb-16">
-              <BreakImage src={data.image} alt="" variant="shatter" className="aspect-[4/3] sm:aspect-[4/5] rounded-[1.75rem] shadow-lift" />
+              <SmartImage src={data.image} alt="" zoom className="group hover-bounce aspect-[4/3] sm:aspect-[4/5] rounded-[1.75rem] shadow-lift" />
               {data.image2 && (
                 <motion.div
                   initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3, duration: 0.7 }}
                   className="absolute bottom-0 right-0 w-3/5 rounded-3xl bg-white p-2 shadow-lift"
                 >
-                  <BreakImage src={data.image2} alt="" variant="mosaic" className="aspect-[4/3] rounded-2xl" />
+                  <SmartImage src={data.image2} alt="" zoom className="group hover-bounce aspect-[4/3] rounded-2xl" />
                 </motion.div>
               )}
               {settings?.established && (
@@ -105,7 +104,7 @@ function Welcome({ data }) {
         <div className="row g-5 align-items-center">
           <div className="col-lg-5 order-lg-2">
             <Reveal x={40} y={0} className="relative mx-auto max-w-[250px] sm:max-w-sm">
-              <BreakImage src={data.image} alt={fill(data.name)} icon="person" variant="slices" className="relative aspect-[4/5] rounded-[1.75rem] shadow-lift" />
+              <SmartImage src={data.image} alt={fill(data.name)} icon="person" zoom className="group hover-bounce relative aspect-[4/5] rounded-[1.75rem] shadow-lift" />
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: 0.4, type: 'spring' }}
                 className="absolute -left-6 md:-left-10 bottom-5 sm:bottom-8 rounded-2xl bg-white p-3 pr-4 sm:p-4 sm:pr-6 shadow-lift"
@@ -160,7 +159,7 @@ function Leaders({ data, people }) {
             <Reveal key={p.id} delay={k * 0.12} className={people.length > 2 ? 'col-6 col-lg-3' : 'col-6 col-lg-4'}>
               <div className="group relative h-full overflow-hidden rounded-theme-lg bg-white shadow-soft ring-1 ring-slate-100 card-lift">
                 <div className="relative aspect-[4/5] overflow-hidden">
-                  {p.photo ? <BreakImage src={p.photo} alt={p.name} variant={k % 2 ? 'blinds' : 'mosaic'} className="h-full w-full" /> : <Avatar src={p.photo} name={p.name} className="h-full w-full" textClassName="text-6xl" />}
+                  {p.photo ? <SmartImage src={p.photo} alt={p.name} zoom className="h-full w-full" /> : <Avatar src={p.photo} name={p.name} className="h-full w-full" textClassName="text-6xl" />}
                   <div className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/10 to-transparent" />
                   <span className="absolute left-2.5 top-2.5 sm:left-4 sm:top-4 inline-flex items-center gap-1 sm:gap-1.5 rounded-full bg-accent-400 px-2 sm:px-3 py-1 text-[0.58rem] sm:text-[0.7rem] font-bold uppercase tracking-wider text-ink-900 shadow"><Icon name="star-fill" />{p.position}</span>
                   <div className="absolute inset-x-0 bottom-0 p-3 sm:p-5">
@@ -193,7 +192,7 @@ function NewsEvents({ newsCfg, eventsCfg, news, events }) {
               <div className="row g-4">
                 {news.map((n, k) => (
                   <Reveal key={n.id} delay={k * 0.1} className={showEvents ? 'col-md-6' : 'col-md-4'}>
-                    <NewsCard item={n} breakStyle={['slices', 'mosaic', 'blinds'][k % 3]} />
+                    <NewsCard item={n} />
                   </Reveal>
                 ))}
               </div>
@@ -235,16 +234,14 @@ function NewsEvents({ newsCfg, eventsCfg, news, events }) {
 const today = () => new Date().toISOString().slice(0, 10);
 
 /** News / event card: photo with a date badge, meta line, headline and a full-width "View details" button. */
-export function NewsCard({ item, breakStyle }) {
+export function NewsCard({ item }) {
   const isEvent = item.category === 'event';
   const when = isEvent && item.event_date ? item.event_date : item.created_at;
   const upcoming = isEvent && item.event_date && item.event_date >= today();
   return (
     <Link to={`/news/${item.slug}`} className="group flex h-full flex-col overflow-hidden rounded-theme-lg bg-white shadow-soft ring-1 ring-slate-100 card-lift">
       <div className="relative">
-        {breakStyle && item.image
-          ? <BreakImage src={item.image} alt={item.title} variant={breakStyle} className="aspect-[16/10]" />
-          : <SmartImage src={item.image} alt={item.title} icon="newspaper" zoom className="aspect-[16/10]" />}
+        <SmartImage src={item.image} alt={item.title} icon="newspaper" zoom className="aspect-[16/10]" />
         <span className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink-950/35 to-transparent" />
         <span className={cx('absolute left-3 top-3 sm:left-4 sm:top-4 rounded-full px-3 py-1 text-[0.65rem] font-bold uppercase tracking-wider shadow', isEvent ? 'bg-accent-400 text-ink-900' : 'bg-white/95 text-brand-800')}>
           {isEvent ? (upcoming ? 'Upcoming event' : 'Event') : 'News'}
@@ -284,9 +281,9 @@ function GalleryPreview({ data, images }) {
         <SectionHeading eyebrow={data.eyebrow} title={data.title} subtitle={data.subtitle} />
         <div className="grid grid-cols-2 md:grid-cols-4 grid-flow-dense auto-rows-[160px] md:auto-rows-[200px] gap-3 md:gap-4">
           {images.slice(0, 8).map((img, k) => (
-            <Reveal key={img.id} delay={k * 0.06} scale={0.9} y={0} className={cx('group relative overflow-hidden rounded-2xl cursor-pointer', shapes[k])}>
-              <button type="button" onClick={() => setIdx(k)} className="absolute inset-0 w-full" aria-label={img.caption || 'Open photo'}>
-                <BreakImage src={img.url} alt={img.caption} variant={['mosaic', 'slices', 'shatter', 'blinds'][k % 4]} className="h-full w-full" />
+            <Reveal key={img.id} delay={k * 0.06} scale={0.9} y={0} className={cx('group relative cursor-pointer', shapes[k])}>
+              <button type="button" onClick={() => setIdx(k)} className="hover-bounce absolute inset-0 w-full overflow-hidden rounded-2xl bg-brand-50" aria-label={img.caption || 'Open photo'}>
+                <SmartImage src={img.url} alt={img.caption} zoom className="h-full w-full" />
                 <span className="absolute inset-0 bg-gradient-to-t from-brand-900/80 via-brand-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <span className="absolute inset-0 grid place-items-center opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500">
                   <span className="grid place-items-center h-14 w-14 rounded-full bg-white/95 text-brand-700 text-xl"><Icon name="arrows-fullscreen" /></span>

@@ -50,7 +50,7 @@ export function NewsDetail() {
   const crumbs = [{ label: fill(page('news').label || 'News'), to: '/news' }];
 
   if (loading) return (<><PageHeader title="Loading…" subtitle="" crumbs={crumbs} /><div className="container section"><div className="skeleton h-96" /></div></>);
-  if (error) return (<><PageHeader title="Article not found" subtitle="" crumbs={crumbs} /><div className="container section"><ErrorState error={error} onRetry={reload} /></div></>);
+  if (error) return (<><PageHeader title={error.status === 404 ? 'Article not found' : 'News & events'} subtitle="" crumbs={crumbs} /><div className="container section"><ErrorState error={error} onRetry={reload} /></div></>);
 
   const { item, related } = data;
   const isEvent = item.category === 'event';

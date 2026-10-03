@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { asset } from '../lib/api';
+import { ERRORS, errorCode } from '../lib/errors';
 import { cx, initials, isExternal } from '../lib/utils';
 import { useSite } from '../context/SiteContext';
 
@@ -90,7 +91,7 @@ export function SmartImage({ src, alt = '', className, imgClassName, icon = 'ima
             className={cx(
               'h-full w-full object-cover transition-all duration-700',
               loaded ? 'opacity-100' : 'opacity-0',
-              zoom && 'group-hover:scale-110',
+              zoom && 'group-hover:scale-105',
               imgClassName
             )}
           />
@@ -137,12 +138,18 @@ export function SkeletonGrid({ count = 6, className = 'h-72' }) {
   );
 }
 
+/** An error inside a page section (a list that failed to load, etc.), worded for the kind of error. */
 export function ErrorState({ error, onRetry }) {
+  const code = errorCode(error);
+  const info = ERRORS[code];
+  // The server's own message is more useful than the generic one for request errors (4xx).
+  const text = code.startsWith('4') && error?.message && !/^Request failed/.test(error.message) ? error.message : info.text;
   return (
-    <div className="text-center py-16">
-      <Icon name="wifi-off" className="text-5xl text-slate-300" />
-      <p className="mt-3 text-slate-500">{error?.message || 'Something went wrong.'}</p>
-      {onRetry && <button onClick={onRetry} className="btn-outline-brand mt-2">Try again</button>}
+    <div className="mx-auto max-w-md py-16 text-center">
+      <span className="inline-grid place-items-center h-16 w-16 rounded-2xl bg-brand-50 text-3xl text-brand-600 ring-1 ring-brand-100"><Icon name={info.icon} /></span>
+      <h3 className="mt-4 text-xl font-bold text-ink-950">{info.title}</h3>
+      <p className="mt-1 text-slate-500">{text}</p>
+      {onRetry && code !== '404' && <button onClick={onRetry} className="btn-outline-brand mt-3"><Icon name="arrow-clockwise" />Try again</button>}
     </div>
   );
 }

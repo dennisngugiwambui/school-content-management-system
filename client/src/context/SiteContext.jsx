@@ -10,10 +10,10 @@ export function SiteProvider({ children }) {
   const reload = useCallback(async () => {
     try {
       const data = await api.get('/public/site');
-      setState({ loading: false, error: null, ...data });
+      setState({ loading: false, error: null, errorStatus: null, ...data });
       return data;
     } catch (e) {
-      setState((s) => ({ ...s, loading: false, error: e.message }));
+      setState((s) => ({ ...s, loading: false, error: e.message, errorStatus: e.status }));
       return null;
     }
   }, []);

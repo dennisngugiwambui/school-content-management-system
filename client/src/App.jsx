@@ -18,6 +18,8 @@ import Tenders from './pages/Tenders';
 import { NewsList, NewsDetail } from './pages/News';
 import Portal, { SchoolPortalCard } from './pages/Portal';
 import PromoPage from './pages/PromoPage';
+import ErrorPage, { ErrorBoundary } from './pages/ErrorPage';
+import { ERROR_PAGES, errorCode } from './lib/errors';
 import { Icon } from './components/ui';
 import { ADMIN_URL, STATIC, portalHasLinks } from './lib/api';
 
@@ -57,70 +59,66 @@ function RequireAuth({ children, admin = false }) {
   const location = useLocation();
   if (checking) return <Preloader label="Checking session" />;
   if (!user) return <Navigate to="/portal" replace state={{ from: location.pathname }} />;
-  if (admin && !isAdmin) return <Navigate to="/admin" replace />;
+  if (admin && !isAdmin) return <ErrorPage code="403" />;
   return children;
 }
 
-function ServerError({ message, retry }) {
-  return (
-    <div className="min-h-screen grid place-items-center p-6 text-center">
-      <div>
-        <Icon name="cloud-slash" className="text-6xl text-brand-300" />
-        <h1 className="mt-4 text-2xl font-bold">We can’t reach the school server</h1>
-        <p className="text-slate-500">{message}</p>
-        <button onClick={retry} className="btn-brand mt-2"><Icon name="arrow-clockwise" />Try again</button>
-      </div>
-    </div>
-  );
+function ServerError({ error, retry }) {
+  const code = errorCode(error);
+  // A plain network failure means the server is down or asleep rather than the visitor being offline.
+  return <ErrorPage code={code === 'offline' && navigator.onLine ? '503' : code} fullScreen onRetry={retry} />;
 }
 
 export default function App() {
-  const { loading, installed, error, settings, reload } = useSite();
+  const { loading, installed, error, errorStatus, settings, reload } = useSite();
   const { pathname } = useLocation();
 
   if (loading) return <Preloader />;
-  if (error && !settings) return <ServerError message={error} retry={reload} />;
+  if (error && !settings) return <ServerError error={{ message: error, status: errorStatus }} retry={reload} />;
   if (!installed && pathname !== '/setup') return <Navigate to="/setup" replace />;
 
   return (
-    <Suspense fallback={<Preloader />}>
-      <Routes>
-        <Route path="/setup" element={installed ? <Navigate to="/" replace /> : <Setup />} />
-        <Route path="/portal" element={STATIC ? <StaticPortal /> : <Portal />} />
-        {['/login', '/signin', '/admin/login'].map((p) => <Route key={p} path={p} element={<Navigate to="/portal" replace />} />)}
-        {STATIC && <Route path="/admin/*" element={<StaticPortal />} />}
-        {!STATIC && <Route path="/admin" element={<RequireAuth><AdminLayout /></RequireAuth>}>
-          <Route index element={<Dashboard />} />
-          <Route path="content/:key" element={<ContentEditor />} />
-          <Route path="settings" element={<RequireAuth admin><SettingsPage /></RequireAuth>} />
-          <Route path="users" element={<RequireAuth admin><ResourcePage kind="users" /></RequireAuth>} />
-          <Route path="departments" element={<ResourcePage kind="departments" />} />
-          <Route path="staff" element={<ResourcePage kind="staff" />} />
-          <Route path="prefects" element={<ResourcePage kind="prefects" />} />
-          <Route path="news" element={<ResourcePage kind="news" />} />
-          <Route path="tenders" element={<ResourcePage kind="tenders" />} />
-          <Route path="gallery" element={<GalleryAdmin />} />
-          <Route path="account" element={<Account />} />
-          <Route path="*" element={<Navigate to="/admin" replace />} />
-        </Route>}
-        <Route element={<PublicLayout />}>
-          <Route index element={<Home />} />
-          <Route path="about" element={<About />} />
-          <Route path="departments" element={<Departments />} />
-          <Route path="departments/:slug" element={<DepartmentDetail />} />
-          <Route path="structure" element={<Structure />} />
-          <Route path="staff" element={<Staff />} />
-          <Route path="prefects" element={<Prefects />} />
-          <Route path="gallery" element={<Gallery />} />
-          <Route path="results" element={<Results />} />
-          <Route path="fees" element={<Fees />} />
-          <Route path="tenders" element={<Tenders />} />
-          <Route path="news" element={<NewsList />} />
-          <Route path="news/:slug" element={<NewsDetail />} />
-          {/* Promotion pages live at addresses the admin chooses; anything else is a 404. */}
-          <Route path="*" element={<PromoPage />} />
-        </Route>
-      </Routes>
-    </Suspense>
+    <ErrorBoundary key={pathname}>
+      <Suspense fallback={<Preloader />}>
+        <Routes>
+          <Route path="/setup" element={installed ? <Navigate to="/" replace /> : <Setup />} />
+          <Route path="/portal" element={STATIC ? <StaticPortal /> : <Portal />} />
+          {['/login', '/signin', '/admin/login'].map((p) => <Route key={p} path={p} element={<Navigate to="/portal" replace />} />)}
+          {STATIC && <Route path="/admin/*" element={<StaticPortal />} />}
+          {!STATIC && <Route path="/admin" element={<RequireAuth><AdminLayout /></RequireAuth>}>
+            <Route index element={<Dashboard />} />
+            <Route path="content/:key" element={<ContentEditor />} />
+            <Route path="settings" element={<RequireAuth admin><SettingsPage /></RequireAuth>} />
+            <Route path="users" element={<RequireAuth admin><ResourcePage kind="users" /></RequireAuth>} />
+            <Route path="departments" element={<ResourcePage kind="departments" />} />
+            <Route path="staff" element={<ResourcePage kind="staff" />} />
+            <Route path="prefects" element={<ResourcePage kind="prefects" />} />
+            <Route path="news" element={<ResourcePage kind="news" />} />
+            <Route path="tenders" element={<ResourcePage kind="tenders" />} />
+            <Route path="gallery" element={<GalleryAdmin />} />
+            <Route path="account" element={<Account />} />
+            <Route path="*" element={<Navigate to="/admin" replace />} />
+          </Route>}
+          <Route element={<PublicLayout />}>
+            <Route index element={<Home />} />
+            <Route path="about" element={<About />} />
+            <Route path="departments" element={<Departments />} />
+            <Route path="departments/:slug" element={<DepartmentDetail />} />
+            <Route path="structure" element={<Structure />} />
+            <Route path="staff" element={<Staff />} />
+            <Route path="prefects" element={<Prefects />} />
+            <Route path="gallery" element={<Gallery />} />
+            <Route path="results" element={<Results />} />
+            <Route path="fees" element={<Fees />} />
+            <Route path="tenders" element={<Tenders />} />
+            <Route path="news" element={<NewsList />} />
+            <Route path="news/:slug" element={<NewsDetail />} />
+            {ERROR_PAGES.map((c) => <Route key={c} path={c} element={<ErrorPage code={c} />} />)}
+            {/* Promotion pages live at addresses the admin chooses; anything else is a 404. */}
+            <Route path="*" element={<PromoPage />} />
+          </Route>
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 }

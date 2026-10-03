@@ -82,15 +82,16 @@
       linear-gradient(90deg, rgb(255 255 255 / 0.06) 1px, transparent 1px);
     background-size: 48px 48px;
   }
-  /* BreakImage: pieces of one photo that pull apart when the image or its card is hovered. */
-  .break-img { background: rgb(var(--brand-50)); }
-  .break-piece {
-    position: absolute; overflow: hidden;
-    transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.7s ease;
-    transition-delay: var(--d);
+
+  /* Playful hover for photos and tiles: they spring up a little (with a small overshoot) and settle back. */
+  .hover-bounce {
+    transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.55s ease;
+    will-change: transform;
   }
-  .break-piece > i { position: absolute; display: block; background-size: cover; background-position: center; }
-  .break-img:hover .break-piece, .group:hover .break-piece { transform: var(--t); filter: saturate(1.15); }
+  .hover-bounce:hover, .group:hover > .hover-bounce {
+    transform: translateY(-8px) rotate(-0.6deg);
+    box-shadow: 0 22px 40px -18px rgb(var(--brand-900) / 0.45);
+  }
   .text-gradient { @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-brand-400; }
   .skeleton {
     @apply rounded-xl;
@@ -148,5 +149,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
-  .break-img:hover .break-piece, .group:hover .break-piece { transform: none; }
+  .hover-bounce:hover, .group:hover > .hover-bounce { transform: none; }
 }

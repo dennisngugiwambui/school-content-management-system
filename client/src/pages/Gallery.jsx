@@ -82,12 +82,15 @@ export default function Gallery() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.85 }}
                   transition={{ duration: 0.4, delay: Math.min(k * 0.03, 0.4) }}
-                  className="group relative block aspect-[4/3] w-full overflow-hidden rounded-2xl bg-brand-50 shadow-sm"
+                  className="group relative block aspect-[4/3] w-full"
                 >
-                  <img src={asset(p.url)} alt={p.caption || ''} loading="lazy" className="absolute inset-0 block h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                  <span className="absolute inset-0 bg-gradient-to-t from-brand-900/85 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <span className="absolute right-3 top-3 grid place-items-center h-10 w-10 rounded-full bg-white/90 text-brand-700 opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500"><Icon name="zoom-in" /></span>
-                  {p.caption && <span className="absolute inset-x-0 bottom-0 p-3 text-left text-xs md:text-sm font-medium text-white line-clamp-2 translate-y-full group-hover:translate-y-0 transition-transform duration-500">{p.caption}</span>}
+                  {/* The bounce sits on an inner layer: the button's own transform belongs to the layout animation. */}
+                  <span className="hover-bounce absolute inset-0 block overflow-hidden rounded-2xl bg-brand-50 shadow-sm">
+                    <img src={asset(p.url)} alt={p.caption || ''} loading="lazy" className="absolute inset-0 block h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <span className="absolute inset-0 bg-gradient-to-t from-brand-900/85 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <span className="absolute right-3 top-3 grid place-items-center h-10 w-10 rounded-full bg-white/90 text-brand-700 opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500"><Icon name="zoom-in" /></span>
+                    {p.caption && <span className="absolute inset-x-0 bottom-0 p-3 text-left text-xs md:text-sm font-medium text-white line-clamp-2 translate-y-full group-hover:translate-y-0 transition-transform duration-500">{p.caption}</span>}
+                  </span>
                 </motion.button>
               ))}
             </AnimatePresence>
